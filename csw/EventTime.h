@@ -8,7 +8,7 @@
 
 // An EventTime containing seconds since the epoch (1970) and the offset from seconds in nanoseconds
 typedef struct {
-    int seconds;
+    long seconds;
     int nanos;
 } EventTime;
 

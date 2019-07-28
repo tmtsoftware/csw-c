@@ -2,7 +2,7 @@
 // Created by abrighto on 7/25/19.
 //
 
-#include <csw/redisConnector.h>
+#include <csw/RedisConnector.h>
 #include <assert.h>
 #include <string.h>
 #include <zconf.h>
@@ -34,7 +34,7 @@ int main() {
 
     // -- subscribe --
     const char *keyList[1] = {key};
-    int subStatus = redisConnectorSubscribeCallback(context, keyList, 1, callback, NULL);
+    int subStatus = redisConnectorSubscribe(context, keyList, 1, callback, NULL);
     assert(subStatus == 0);
 
     int pubStatus2 = redisConnectorPublish(context, key, "12345");

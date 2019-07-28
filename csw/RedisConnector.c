@@ -2,7 +2,7 @@
 // Created by abrighto on 7/24/19.
 //
 
-#include "redisConnector.h"
+#include "RedisConnector.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -52,20 +52,20 @@ void redisConnectorClose(RedisConnectorContext context) {
 
 // Joins array of strings together with given separator, and save in result,
 // which should have the necessary space allocated
-static void join(const char **arr, int len, const char *sep, char *result) {
+static void _join(const char **arr, int len, const char *sep, char *result) {
     if (len == 0) {
         *result = '\0';
     } else {
         strcat(result, arr[0]);
         if (len > 1) {
             strcat(result, sep);
-            join(arr + 1, len - 1, sep, result + strlen(result));
+            _join(arr + 1, len - 1, sep, result + strlen(result));
         }
     }
 }
 
 // Returns total length of the key strings in the array
-static int getTotalSize(const char **keyList, int numKeys) {
+static int _getTotalSize(const char **keyList, int numKeys) {
     int bufSize = 0;
     for (int i = 0; i < numKeys; i++)
         bufSize += strlen(keyList[i]);
@@ -73,7 +73,7 @@ static int getTotalSize(const char **keyList, int numKeys) {
 }
 
 // Internal callback used to simplify API.
-static void subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *privateData) {
+static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *privateData) {
     redisReply *reply = r;
     if (reply == NULL) {
         printf("Redis subscribe callback with null message\n");
@@ -81,11 +81,10 @@ static void subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *priv
     }
     if (reply->type == REDIS_REPLY_ARRAY && reply->elements == 3) {
         if (strcmp(reply->element[0]->str, "subscribe") != 0) {
-            const char* channel = reply->element[1]->str;
-            void* msg = reply->element[2]->str;
-            RedisConnectorCallbackData* callbackData = privateData;
+            const char *channel = reply->element[1]->str;
+            void *msg = reply->element[2]->str;
+            RedisConnectorCallbackData *callbackData = privateData;
             (*callbackData->callback)(channel, msg, callbackData->privateData);
-            free(callbackData);
         }
     }
 }
@@ -99,21 +98,52 @@ static void subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *priv
  * @param numKeys number of keys in list
  * @param callback callack function to be notified
  * @param privateData caller data
- * @return 0 if there were no errors
+ * @return an instance of RedisConnectorCallbackData if there were no errors, otherwise NULL.
  */
-int redisConnectorSubscribeCallback(RedisConnectorContext context, const char **keyList, int numKeys,
-                                     RedisConnectorCallback callback, void* privateData) {
-    int bufSize = getTotalSize(keyList, numKeys) + numKeys;
+RedisConnectorCallbackData *redisConnectorSubscribe(RedisConnectorContext context, const char **keyList, int numKeys,
+                                                    RedisConnectorCallback callback, void *privateData) {
+    int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
     char keys[bufSize];
     keys[0] = '\0';
-    join(keyList, numKeys, " ", keys);
-    RedisConnectorCallbackData* callbackData = malloc(sizeof(RedisConnectorCallbackData));
+    _join(keyList, numKeys, " ", keys);
+    RedisConnectorCallbackData *callbackData = malloc(sizeof(RedisConnectorCallbackData));
     callbackData->callback = callback;
     callbackData->privateData = privateData;
-    int result = redisAsyncCommand(context.asyncRedis, subscribeCallback, callbackData, "subscribe %s", keys);
-    if (result != REDIS_OK)
+    int result = redisAsyncCommand(context.asyncRedis, _subscribeCallback, callbackData, "subscribe %s", keys);
+    if (result != REDIS_OK) {
         printf("Redis SUBSCRIBE Error: %s\n", context.asyncRedis->errstr);
-    return result;
+        free(callbackData);
+        return NULL;
+    } else {
+        return callbackData;
+    }
+}
+
+/**
+ * Unsubscribes to changes in the values of the given keys.
+ *
+ * @param context the return value from redisConnectorInit
+ * @param keyList list of keys to subscribe to
+ * @param numKeys number of keys in list
+ * @param callbackData the value returned from the redisConnectorSubscribe() call (needs to be freed, may be NULL if already freed)
+ * @return 0 if there were no errors
+ */
+int redisConnectorUnsubscribe(RedisConnectorContext context, const char **keyList, int numKeys,
+                              RedisConnectorCallbackData *callbackData) {
+    int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
+    char keys[bufSize];
+    keys[0] = '\0';
+    _join(keyList, numKeys, " ", keys);
+    redisReply *reply = redisCommand(context.redis, "unsubscribe %s", keys);
+    int status = 0;
+    if (reply == NULL) {
+        printf("Redis UNSUBSCRIBE Error: %s\n", context.redis->errstr);
+        status++;
+    }
+    if (callbackData)
+        free(callbackData);
+
+    return status;
 }
 
 /**

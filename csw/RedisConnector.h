@@ -24,8 +24,8 @@ RedisConnectorContext redisConnectorInit(void);
 
 void redisConnectorClose(RedisConnectorContext context);
 
-int redisConnectorSubscribeCallback(RedisConnectorContext context, const char **keyList, int numKeys,
-                                    RedisConnectorCallback callback, void *privateData);
+RedisConnectorCallbackData* redisConnectorSubscribe(RedisConnectorContext context, const char **keyList, int numKeys,
+                            RedisConnectorCallback callback, void *privateData);
 
 int redisConnectorPublish(RedisConnectorContext context, const char *key, const char *encodedValue);
 
