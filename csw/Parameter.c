@@ -5,6 +5,10 @@
 #include <string.h>
 #include <cbor.h>
 #include "Parameter.h"
+#include "Coords.h"
+
+
+// --- KeyTypes ---
 
 static const char *_keyTypeNames[] = {
         "ChoiceKey",
@@ -58,11 +62,68 @@ static KeyType _keyTypeValue(const char *keyTypeName) {
     return -1;
 }
 
-static cbor_item_t *_makeStringItem(void *value) {
+// --- EqFrame ---
+
+static const char *_eqFrameNames[] = {
+        "ICRS",
+        "FK5"
+};
+
+static const size_t numEqFrames = sizeof(_eqFrameNames) / sizeof(char *);
+
+// Gets the name for the given EqFrame enum value
+static const char *_eqFrameName(EqFrame eqFrame) {
+    return _eqFrameNames[eqFrame];
+}
+
+// Gets the enum value for the given EQFrame name
+static EqFrame _eqFrameValue(const char *eqFrameName) {
+    for (int i = 0; i < numEqFrames; i++) {
+        if (strncmp(_eqFrameNames[i], eqFrameName, strlen(_eqFrameNames[i])) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// --- Solar System Object ---
+
+static const char *_solarSystemObjectNames[] = {
+        "Mercury",
+        "Venus",
+        "Moon",
+        "Mars",
+        "Jupiter",
+        "Saturn",
+        "Neptune",
+        "Uranus",
+        "Pluto"
+};
+
+static const size_t numSolarSystemObjects = sizeof(_solarSystemObjectNames) / sizeof(char *);
+
+// Gets the name for the given SolarSystemObject enum value
+static const char *_solarSystemObjectName(SolarSystemObject solarSystemObject) {
+    return _solarSystemObjectNames[solarSystemObject];
+}
+
+// Gets the enum value for the given EQFrame name
+static SolarSystemObject _solarSystemObjectValue(const char *solarSystemObjectName) {
+    for (int i = 0; i < numSolarSystemObjects; i++) {
+        if (strncmp(_solarSystemObjectNames[i], solarSystemObjectName, strlen(_solarSystemObjectNames[i])) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// ----
+
+static cbor_item_t *_makeStringItem(const void *value) {
     return cbor_move(cbor_build_string(value));
 }
 
-static cbor_item_t *_makeLongItem(void *value) {
+static cbor_item_t *_makeLongItem(const void *value) {
     long v = *(long *) value;
     if (v < 0)
         return cbor_move(cbor_build_negint64(v));
@@ -70,7 +131,7 @@ static cbor_item_t *_makeLongItem(void *value) {
         return cbor_move(cbor_build_uint64(v));
 }
 
-static cbor_item_t *_makeIntItem(void *value) {
+static cbor_item_t *_makeIntItem(const void *value) {
     int v = *(int *) value;
     if (v < 0)
         return cbor_move(cbor_build_negint32(v));
@@ -78,7 +139,7 @@ static cbor_item_t *_makeIntItem(void *value) {
         return cbor_move(cbor_build_uint32(v));
 }
 
-static cbor_item_t *_makeShortItem(void *value) {
+static cbor_item_t *_makeShortItem(const void *value) {
     short v = *(short *) value;
     if (v < 0)
         return cbor_move(cbor_build_negint16(v));
@@ -87,7 +148,7 @@ static cbor_item_t *_makeShortItem(void *value) {
 }
 
 // XXX TODO: make UTF8 compatible?
-static cbor_item_t *_makeCharItem(void *value) {
+static cbor_item_t *_makeCharItem(const void *value) {
     signed char v = *(signed char *) value;
     if (v < 0)
         return cbor_move(cbor_build_negint8(v));
@@ -95,24 +156,24 @@ static cbor_item_t *_makeCharItem(void *value) {
         return cbor_move(cbor_build_uint8(v));
 }
 
-static cbor_item_t *_makeFloatItem(void *value) {
+static cbor_item_t *_makeFloatItem(const void *value) {
     float v = *(float *) value;
     return cbor_move(cbor_build_float4(v));
 }
 
-static cbor_item_t *_makeDoubleItem(void *value) {
+static cbor_item_t *_makeDoubleItem(const void *value) {
     double v = *(double *) value;
     return cbor_move(cbor_build_float8(v));
 }
 
-static cbor_item_t *_makeBooleanItem(void *value) {
+static cbor_item_t *_makeBooleanItem(const void *value) {
     bool v = *(bool *) value;
     return cbor_move(cbor_build_bool(v));
 }
 
-static cbor_item_t *_arrayValueAsItem(KeyType keyType, void *values, int index);
+static cbor_item_t *_arrayValueAsItem(KeyType keyType, const void *values, int index);
 
-static cbor_item_t *_makeArrayItem(KeyType keyType, ArrayValue *values) {
+static cbor_item_t *_makeArrayItem(KeyType keyType, const ArrayValue *values) {
     cbor_item_t *array = cbor_new_definite_array(values->numValues);
     for (int i = 0; i < values->numValues; i++) {
         cbor_array_push(array, _arrayValueAsItem(keyType, values->values, i));
@@ -120,31 +181,143 @@ static cbor_item_t *_makeArrayItem(KeyType keyType, ArrayValue *values) {
     return array;
 }
 
-static cbor_item_t *_makeMatrixItem(KeyType keyType, ArrayValue *values) {
+static cbor_item_t *_makeMatrixItem(KeyType keyType, const ArrayValue *values) {
     cbor_item_t *array = cbor_new_definite_array(values->numValues);
     for (int i = 0; i < values->numValues; i++) {
-        cbor_array_push(array, _makeArrayItem(keyType, (ArrayValue*)(values->values + i)));
+        cbor_array_push(array, _makeArrayItem(keyType, (ArrayValue *) (values->values + i)));
     }
     return array;
 }
 
-static cbor_item_t *_makeStructItem(void *value) {
-    Struct* myStruct = (Struct*)value;
+
+static struct cbor_pair _makeStringPair(const char *key, const char *value) {
+    return (struct cbor_pair) {
+            .key = _makeStringItem(key),
+            .value = _makeStringItem(value)
+    };
+}
+
+static struct cbor_pair _makeIntPair(const char *key, int value) {
+    return (struct cbor_pair) {
+            .key = _makeStringItem(key),
+            .value = _makeIntItem(&value)
+    };
+}
+
+static struct cbor_pair _makeFloatPair(const char *key, float value) {
+    return (struct cbor_pair) {
+            .key = _makeStringItem(key),
+            .value = _makeFloatItem(&value)
+    };
+}
+
+static struct cbor_pair _makeItemPair(const char *key, cbor_item_t *value) {
+    return (struct cbor_pair) {
+            .key = _makeStringItem(key),
+            .value = cbor_move(value)
+    };
+}
+
+static cbor_item_t *_makeStructItem(const void *value) {
+    Struct *myStruct = (Struct *) value;
     cbor_item_t *array = cbor_new_definite_array(myStruct->numParams);
     for (int i = 0; i < myStruct->numParams; i++) {
         cbor_array_push(array, parameterAsMap(myStruct->paramSet[i]));
     }
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map,
-                 (struct cbor_pair) {
-                         .key = cbor_move(cbor_build_string("paramSet")),
-                         .value = array});
+    cbor_map_add(map, _makeItemPair("paramSet", array));
     return map;
 }
 
+static cbor_item_t *_makeEqCoordItem(EqCoord *value) {
+    cbor_item_t *valueMap = cbor_new_definite_map(6);
+    cbor_map_add(valueMap, _makeStringPair("tag", value->tag.name));
+    cbor_map_add(valueMap, _makeIntPair("dec", value->dec.uas));
+    cbor_map_add(valueMap, _makeStringPair("frame", _eqFrameName(value->frame)));
+    cbor_map_add(valueMap, _makeStringPair("catalogName", value->catalogName));
+
+    cbor_item_t *pmMap = cbor_new_definite_map(2);
+    cbor_map_add(pmMap, _makeFloatPair("pmx", value->pm.pmx));
+    cbor_map_add(pmMap, _makeFloatPair("pmy", value->pm.pmy));
+    cbor_map_add(valueMap, _makeItemPair("pm", pmMap));
+
+    cbor_item_t *map = cbor_new_definite_map(1);
+    cbor_map_add(map, _makeItemPair("EqCoord", valueMap));
+    return map;
+}
+
+static cbor_item_t *_makeSolarSystemCoordItem(const SolarSystemCoord *value) {
+    cbor_item_t *valueMap = cbor_new_definite_map(2);
+    cbor_map_add(valueMap, _makeStringPair("tag", value->tag.name));
+    cbor_map_add(valueMap, _makeStringPair("frame", _solarSystemObjectName(value->body)));
+
+    cbor_item_t *map = cbor_new_definite_map(1);
+    cbor_map_add(map, _makeItemPair("SolarSystemCoord", valueMap));
+    return map;
+}
+
+static cbor_item_t *_makeMinorPlanetCoordItem(const MinorPlanetCoord *value) {
+    cbor_item_t *valueMap = cbor_new_definite_map(8);
+    cbor_map_add(valueMap, _makeStringPair("tag", value->tag.name));
+    cbor_map_add(valueMap, _makeFloatPair("epoch", value->epoch));
+    cbor_map_add(valueMap, _makeIntPair("inclination", value->inclination.uas));
+    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value->longAscendingNode.uas));
+    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value->argOfPerihelion.uas));
+    cbor_map_add(valueMap, _makeFloatPair("meanDistance", value->meanDistance));
+    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value->eccentricity));
+    cbor_map_add(valueMap, _makeIntPair("meanAnomaly", value->meanAnomaly.uas));
+
+    cbor_item_t *map = cbor_new_definite_map(1);
+    cbor_map_add(map, _makeItemPair("MinorPlanetCoord", valueMap));
+    return map;
+}
+
+static cbor_item_t *_makeCometCoordItem(const CometCoord *value) {
+    cbor_item_t *valueMap = cbor_new_definite_map(7);
+    cbor_map_add(valueMap, _makeStringPair("tag", value->tag.name));
+    cbor_map_add(valueMap, _makeFloatPair("epochOfPerihelion", value->epochOfPerihelion));
+    cbor_map_add(valueMap, _makeIntPair("inclination", value->inclination.uas));
+    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value->longAscendingNode.uas));
+    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value->argOfPerihelion.uas));
+    cbor_map_add(valueMap, _makeFloatPair("perihelionDistance", value->perihelionDistance));
+    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value->eccentricity));
+
+    cbor_item_t *map = cbor_new_definite_map(1);
+    cbor_map_add(map, _makeItemPair("CometCoord", valueMap));
+    return map;
+}
+
+static cbor_item_t *_makeAltAzCoordItem(const AltAzCoord *value) {
+    cbor_item_t *valueMap = cbor_new_definite_map(3);
+    cbor_map_add(valueMap, _makeStringPair("tag", value->tag.name));
+    cbor_map_add(valueMap, _makeIntPair("alt", value->alt.uas));
+    cbor_map_add(valueMap, _makeIntPair("az", value->az.uas));
+
+    cbor_item_t *map = cbor_new_definite_map(1);
+    cbor_map_add(map, _makeItemPair("AltAzCoord", valueMap));
+    return map;
+}
+
+static cbor_item_t *_makeCoordItem(const void *value) {
+    Coord *coord = (Coord *) value;
+    switch (coord->keyType) {
+        case EqCoordKeyType:
+            return _makeEqCoordItem((EqCoord *) value);
+        case SolarSystemCoordKeyType:
+            return _makeSolarSystemCoordItem((SolarSystemCoord *) value);
+        case MinorPlanetCoordKeyType:
+            return _makeMinorPlanetCoordItem((MinorPlanetCoord *) value);
+        case CometCoordKeyType:
+            return _makeCometCoordItem((CometCoord *) value);
+        case AltAzCoordKeyType:
+            return _makeAltAzCoordItem((AltAzCoord *) value);
+    }
+}
+
+
 // Returns a cbor item for the parameter value at the given index
-static cbor_item_t *_arrayValueAsItem(KeyType keyType, void *values, int index) {
-    void *value = values + index;
+static cbor_item_t *_arrayValueAsItem(KeyType keyType, const void *values, int index) {
+    const void *value = values + index;
     switch (keyType) {
         case ChoiceKey:
         case UTCTimeKey:
@@ -154,19 +327,19 @@ static cbor_item_t *_arrayValueAsItem(KeyType keyType, void *values, int index) 
         case StructKey:
             return _makeStructItem(value);
         case RaDecKey:
-            return "RaDecKey";
+            return NULL; // TODO: FIXME
         case EqCoordKey:
-            return "EqCoordKey";
+            return _makeCoordItem(value);
         case SolarSystemCoordKey:
-            return "SolarSystemCoordKey";
+            return _makeSolarSystemCoordItem(value);
         case MinorPlanetCoordKey:
-            return "MinorPlanetCoordKey";
+            return _makeMinorPlanetCoordItem(value);
         case CometCoordKey:
-            return "CometCoordKey";
+            return _makeCometCoordItem(value);
         case AltAzCoordKey:
-            return "AltAzCoordKey";
+            return _makeAltAzCoordItem(value);
         case CoordKey:
-            return "CoordKey";
+            return _makeCoordItem(value);
         case BooleanKey:
             return _makeBooleanItem(value);
         case CharKey:
@@ -232,28 +405,16 @@ static cbor_item_t *_paramValuesAsMap(Parameter param) {
 // Returns a CBOR map for the contents of the given Parameter argument
 static cbor_item_t *_paramAsMap(Parameter param) {
     cbor_item_t *map = cbor_new_definite_map(3);
-    cbor_map_add(map,
-                 (struct cbor_pair) {
-                         .key = cbor_move(cbor_build_string("keyName")),
-                         .value = cbor_move(cbor_build_string(param.keyName))});
-    cbor_map_add(map,
-                 (struct cbor_pair) {
-                         .key = cbor_move(cbor_build_string("values")),
-                         .value = cbor_move(_paramValuesAsMap(param))});
-    cbor_map_add(map,
-                 (struct cbor_pair) {
-                         .key = cbor_move(cbor_build_string("units")),
-                         .value = cbor_move(cbor_build_string(param.units))});
+    cbor_map_add(map, _makeStringPair("keyName", param.keyName));
+    cbor_map_add(map, _makeItemPair("values", _paramValuesAsMap(param)));
+    cbor_map_add(map, _makeStringPair("units", param.units));
     return map;
 }
 
 // Returns a CBOR map for the given Parameter argument
 cbor_item_t *parameterAsMap(Parameter param) {
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map,
-                 (struct cbor_pair) {
-                         .key = cbor_move(cbor_build_string(_keyTypeName(param.keyType))),
-                         .value = _paramAsMap(param)});
+    cbor_map_add(map, _makeItemPair(_keyTypeName(param.keyType), _paramAsMap(param)));
     return map;
 }
 

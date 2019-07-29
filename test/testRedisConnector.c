@@ -5,11 +5,8 @@
 #include <csw/RedisConnector.h>
 #include <assert.h>
 #include <string.h>
-#include <zconf.h>
 
 #include <stdio.h>
-#include <hiredis/hiredis.h>
-#include <hiredis/async.h>
 #include <hiredis/adapters/libev.h>
 
 static void callback(const char *key, const char *value, void *privateData) {
@@ -34,8 +31,8 @@ int main() {
 
     // -- subscribe --
     const char *keyList[1] = {key};
-    int subStatus = redisConnectorSubscribe(context, keyList, 1, callback, NULL);
-    assert(subStatus == 0);
+    RedisConnectorCallbackData* callbackData = redisConnectorSubscribe(context, keyList, 1, callback, NULL);
+    assert(callbackData != NULL);
 
     int pubStatus2 = redisConnectorPublish(context, key, "12345");
     assert(pubStatus2 == 0);

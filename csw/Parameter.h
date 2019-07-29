@@ -5,6 +5,7 @@
 #ifndef CSW_C_PARAMETER_H
 #define CSW_C_PARAMETER_H
 
+#include <cbor.h>
 
 typedef enum {
     ChoiceKey,
