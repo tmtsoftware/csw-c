@@ -7,7 +7,7 @@
 #include "EventTime.h"
 
 // Returns a CBOR map for the given EventTime argument
-cbor_item_t *eventTimeAsMap(EventTime et) {
+cbor_item_t *_cswEventTimeAsMap(CswEventTime et) {
     cbor_item_t *map = cbor_new_definite_map(2);
     cbor_map_add(map,
                  (struct cbor_pair) {
@@ -21,12 +21,10 @@ cbor_item_t *eventTimeAsMap(EventTime et) {
 }
 
 // Returns an EventTime for the given CBOR map
-EventTime eventTimeFromMap(cbor_item_t* map) {
-    EventTime et = {};
+CswEventTime _cswEventTimeFromMap(cbor_item_t* map) {
+    CswEventTime et = {};
     for (size_t i = 0; i < cbor_map_size(map); i++) {
         struct cbor_pair pair = cbor_map_handle(map)[i];
-        /* Careful - this doesn't support multibyte characters! */
-        /* TODO: Try using libICU if that is needed. */
         /* Note: no null at end of string */
         char* key = (char*)cbor_string_handle(pair.key);
         if (strncmp(key, "seconds", cbor_string_length(pair.key)) == 0) {

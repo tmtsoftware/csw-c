@@ -40,7 +40,7 @@ typedef enum {
     IntMatrixKey,
     FloatMatrixKey,
     DoubleMatrixKey
-} KeyType;
+} CswKeyType;
 
 typedef struct {
     // An array of primitive values, or a nested array for array and matrix types or the csw "struct" type.
@@ -48,33 +48,36 @@ typedef struct {
 
     // The number of values in the above array
     int numValues;
-} ArrayValue;
+} CswArrayValue;
 
 // A Parameter (keys with values, units).
 typedef struct {
 
-    KeyType keyType;
+    CswKeyType keyType;
 
     char *keyName;
 
-    ArrayValue values;
+    CswArrayValue values;
 
     // See https://tmtsoftware.github.io/csw/0.7.0-RC1/messages/units.html for list of unit names.
     char *units;
-} Parameter;
+} CswParameter;
 
 
 // A Struct (value when key is "StructKey").
 typedef struct {
     // a list of Parameters that make up the Struct
-    Parameter *paramSet;
+    CswParameter *paramSet;
 
     // The number of parameters in this Struct
     int numParams;
-} Struct;
+} CswStruct;
 
 
-cbor_item_t *parameterAsMap(Parameter param);
+cbor_item_t *_cswParameterAsMap(CswParameter param);
+struct cbor_pair _cswMakeStringPair(const char *key, const char *value);
+struct cbor_pair _cswMakeItemPair(const char *key, cbor_item_t *value);
+struct cbor_pair _cswMakeParamSetItemPair(const CswParameter* paramSet, int numParams);
 
 
 #endif //CSW_C_PARAMETER_H

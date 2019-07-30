@@ -11,25 +11,25 @@
 typedef struct {
     redisContext *redis;
     redisAsyncContext *asyncRedis;
-} RedisConnectorContext;
+} CswRedisConnectorContext;
 
-typedef void (*RedisConnectorCallback)(const char *key, const char *value, void *privateData);
+typedef void (*CswRedisConnectorCallback)(const char *key, const char *value, void *privateData);
 
 typedef struct {
-    RedisConnectorCallback callback;
+    CswRedisConnectorCallback callback;
     void *privateData;
-} RedisConnectorCallbackData;
+} CswRedisConnectorCallbackData;
 
-RedisConnectorContext redisConnectorInit(void);
+CswRedisConnectorContext cswRedisConnectorInit(void);
 
-void redisConnectorClose(RedisConnectorContext context);
+void cswRedisConnectorClose(CswRedisConnectorContext context);
 
-RedisConnectorCallbackData* redisConnectorSubscribe(RedisConnectorContext context, const char **keyList, int numKeys,
-                            RedisConnectorCallback callback, void *privateData);
+CswRedisConnectorCallbackData* cswRedisConnectorSubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
+                                                          CswRedisConnectorCallback callback, void *privateData);
 
-int redisConnectorPublish(RedisConnectorContext context, const char *key, const char *encodedValue);
+int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const char *encodedValue);
 
-char *redisConnectorGet(RedisConnectorContext context, const char *key);
+char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key);
 
 
 #endif //CSW_C_REDISCONNECTOR_H

@@ -10,6 +10,13 @@
 typedef struct {
     long seconds;
     int nanos;
-} EventTime;
+} CswEventTime;
+
+// Returns a CBOR map for the given EventTime argument
+cbor_item_t *_cswEventTimeAsMap(CswEventTime et);
+
+// Returns an EventTime for the given CBOR map
+CswEventTime _cswEventTimeFromMap(cbor_item_t* map);
+
 
 #endif //CSW_C_EVENTTIME_H

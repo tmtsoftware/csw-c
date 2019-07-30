@@ -17,8 +17,8 @@
  *
  * @return context used for subsequent calls
  */
-RedisConnectorContext redisConnectorInit(void) {
-    RedisConnectorContext result;
+CswRedisConnectorContext cswRedisConnectorInit(void) {
+    CswRedisConnectorContext result;
     result.redis = redisConnect("127.0.0.1", 6379);
     if (result.redis == NULL || result.redis->err) {
         if (result.redis) {
@@ -45,7 +45,7 @@ RedisConnectorContext redisConnectorInit(void) {
  *
  * @param context the return value from redisConnectorInit
  */
-void redisConnectorClose(RedisConnectorContext context) {
+void cswRedisConnectorClose(CswRedisConnectorContext context) {
     redisFree(context.redis);
     redisAsyncFree(context.asyncRedis);
 }
@@ -83,7 +83,7 @@ static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *pri
         if (strcmp(reply->element[0]->str, "subscribe") != 0) {
             const char *channel = reply->element[1]->str;
             void *msg = reply->element[2]->str;
-            RedisConnectorCallbackData *callbackData = privateData;
+            CswRedisConnectorCallbackData *callbackData = privateData;
             (*callbackData->callback)(channel, msg, callbackData->privateData);
         }
     }
@@ -100,13 +100,13 @@ static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *pri
  * @param privateData caller data
  * @return an instance of RedisConnectorCallbackData if there were no errors, otherwise NULL.
  */
-RedisConnectorCallbackData *redisConnectorSubscribe(RedisConnectorContext context, const char **keyList, int numKeys,
-                                                    RedisConnectorCallback callback, void *privateData) {
+CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
+                                                          CswRedisConnectorCallback callback, void *privateData) {
     int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
     char keys[bufSize];
     keys[0] = '\0';
     _join(keyList, numKeys, " ", keys);
-    RedisConnectorCallbackData *callbackData = malloc(sizeof(RedisConnectorCallbackData));
+    CswRedisConnectorCallbackData *callbackData = malloc(sizeof(CswRedisConnectorCallbackData));
     callbackData->callback = callback;
     callbackData->privateData = privateData;
     int result = redisAsyncCommand(context.asyncRedis, _subscribeCallback, callbackData, "subscribe %s", keys);
@@ -128,8 +128,8 @@ RedisConnectorCallbackData *redisConnectorSubscribe(RedisConnectorContext contex
  * @param callbackData the value returned from the redisConnectorSubscribe() call (needs to be freed, may be NULL if already freed)
  * @return 0 if there were no errors
  */
-int redisConnectorUnsubscribe(RedisConnectorContext context, const char **keyList, int numKeys,
-                              RedisConnectorCallbackData *callbackData) {
+int redisConnectorUnsubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
+                              CswRedisConnectorCallbackData *callbackData) {
     int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
     char keys[bufSize];
     keys[0] = '\0';
@@ -154,7 +154,7 @@ int redisConnectorUnsubscribe(RedisConnectorContext context, const char **keyLis
  * @param encodedValue the encoded value for the key
  * @return 0 if there were no errors
  */
-int redisConnectorPublish(RedisConnectorContext context, const char *key, const char *encodedValue) {
+int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const char *encodedValue) {
     redisReply *reply1 = redisCommand(context.redis, "set %s %s", key, encodedValue);
     redisReply *reply2 = redisCommand(context.redis, "publish %s %s", key, encodedValue);
     int status = 0;
@@ -180,7 +180,7 @@ int redisConnectorPublish(RedisConnectorContext context, const char *key, const 
  * @param key the key to get
  * @return the (encoded) value for the key
  */
-char *redisConnectorGet(RedisConnectorContext context, const char *key) {
+char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
     redisReply *reply = redisCommand(context.redis, "GET %s", key);
     if (reply == NULL) {
         printf("Redis Error: %s\n", context.redis->errstr);

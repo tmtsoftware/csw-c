@@ -10,7 +10,7 @@
 // A tag is a label to indicate the use of the coordinate
 typedef struct {
     char *name;
-} Tag;
+} CswTag;
 
 // A wrapper for Angle values (See the csw.params.core.models.Angle class).
 // Normally Angle would be stored in double as radians, but this introduces rounding errors.
@@ -22,12 +22,12 @@ typedef struct {
 typedef enum {
     ICRS,
     FK5
-} EqFrame;
+} CswEqFrame;
 
 typedef struct {
     float pmx;
     float pmy;
-} ProperMotion;
+} CswProperMotion;
 
 typedef enum {
     Mercury,
@@ -39,7 +39,7 @@ typedef enum {
     Neptune,
     Uranus,
     Pluto
-} SolarSystemObject;
+} CswSolarSystemObject;
 
 // A subset of KeyType used for coordinate types
 typedef enum {
@@ -48,45 +48,36 @@ typedef enum {
     MinorPlanetCoordKeyType = MinorPlanetCoordKey,
     CometCoordKeyType = CometCoordKey,
     AltAzCoordKeyType = AltAzCoordKey,
-} CoordKeyType;
+} CswCoordKeyType;
 
 // Common base type of coordinate types (Used to figure out which type of coordinate it is when key is CoordKey)
 typedef struct {
-    CoordKeyType keyType; // needed to determine "virtual" type of coord
-    Tag tag;
-} Coord;
+    CswCoordKeyType keyType; // needed to determine "virtual" type of coord
+    CswTag tag;
+} CswCoord;
 
 // Represents equatorial coordinates (mirrors class of same name in the CSW Scala code).
 typedef struct {
-    CoordKeyType keyType;
-    Tag tag;
+    CswCoordKeyType keyType;
+    CswTag tag;
     CswAngle dec;
-    EqFrame frame;
+    CswEqFrame frame;
     char *catalogName;
-    ProperMotion pm;
-} EqCoord;
+    CswProperMotion pm;
+} CswEqCoord;
 
 // Represents Solar System Coordinates (mirrors class of same name in the CSW Scala code).
 typedef struct {
-    CoordKeyType keyType;
-    Tag tag;
-    SolarSystemObject body;
-} SolarSystemCoord;
-
-
-//epoch: float  # TT as a Modified Julian Date
-//inclination: Angle
-//        longAscendingNode: Angle
-//        argOfPerihelion: Angle
-//        meanDistance: float  # AU
-//        eccentricity: float
-//        meanAnomaly: Angle
+    CswCoordKeyType keyType;
+    CswTag tag;
+    CswSolarSystemObject body;
+} CswSolarSystemCoord;
 
 
 // Represents Minor Planet Coordinates (mirrors class of same name in the CSW Scala code).
 typedef struct {
-    CoordKeyType keyType;
-    Tag tag;
+    CswCoordKeyType keyType;
+    CswTag tag;
     float epoch;
     CswAngle inclination;
     CswAngle longAscendingNode;
@@ -94,26 +85,26 @@ typedef struct {
     float meanDistance;  // AU
     float eccentricity;
     CswAngle meanAnomaly;
-} MinorPlanetCoord;
+} CswMinorPlanetCoord;
 
 // Represents Comet Coordinates (mirrors class of same name in the CSW Scala code).
 typedef struct {
-    CoordKeyType keyType;
-    Tag tag;
+    CswCoordKeyType keyType;
+    CswTag tag;
     float epochOfPerihelion;
     CswAngle inclination;
     CswAngle longAscendingNode;
     CswAngle argOfPerihelion;
     float perihelionDistance;  // AU
     float eccentricity;
-} CometCoord;
+} CswCometCoord;
 
 // Represents Alt-Az Coordinates (mirrors class of same name in the CSW Scala code).
 typedef struct {
-    CoordKeyType keyType;
-    Tag tag;
+    CswCoordKeyType keyType;
+    CswTag tag;
     CswAngle alt;
     CswAngle az;
-} AltAzCoord;
+} CswAltAzCoord;
 
 #endif //CSW_C_COORDS_H
