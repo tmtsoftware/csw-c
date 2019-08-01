@@ -20,6 +20,12 @@ typedef struct {
     void *privateData;
 } CswRedisConnectorCallbackData;
 
+typedef struct {
+    size_t length;
+    unsigned char* data;
+    char* errorMsg;  // Set if there was an error
+} CswRedisConnectorGetResult;
+
 CswRedisConnectorContext cswRedisConnectorInit(void);
 
 void cswRedisConnectorClose(CswRedisConnectorContext context);
@@ -38,7 +44,14 @@ CswRedisConnectorCallbackData* cswRedisConnectorSubscribe(CswRedisConnectorConte
  */
 int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue, size_t length);
 
-unsigned char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key);
+/**
+ * Gets the value for the given key
+ *
+ * @param context the return value from redisConnectorInit
+ * @param key the key to get
+ * @return a struct containing the (encoded) value for the key and the length of the value in bytes
+ */
+CswRedisConnectorGetResult cswRedisConnectorGet(CswRedisConnectorContext context, const char *key);
 
 
 #endif //CSW_C_REDISCONNECTOR_H

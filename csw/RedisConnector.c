@@ -181,17 +181,19 @@ int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, 
  *
  * @param context the return value from redisConnectorInit
  * @param key the key to get
- * @return the (encoded) value for the key
+ * @return a struct containing the (encoded) value for the key and the length of the value in bytes
  */
-unsigned char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
+CswRedisConnectorGetResult cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
     redisReply *reply = redisCommand(context.redis, "GET %s", key);
     if (reply == NULL) {
         printf("Redis Error: %s\n", context.redis->errstr);
-        return NULL;
+        CswRedisConnectorGetResult result = {.errorMsg = context.redis->errstr};
+        return result;
     } else {
-        char *result = strdup(reply->str);
+        unsigned char *data = (unsigned char*)strdup(reply->str);
+        CswRedisConnectorGetResult result = {.data = data, .length = reply->len};
         freeReplyObject(reply);
-        return (unsigned char *)result;
+        return result;
     }
 }
 

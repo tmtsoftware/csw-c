@@ -42,4 +42,7 @@ cbor_item_t *cswEventAsMap(CswEvent event);
 // Event constructor
 CswEvent cswMakeEvent(CswEventType eventType, const char* source, const char* eventName, CswParamSet paramSet);
 
+// Free any allocated memory for the event
+void cswFreeEvent(CswEvent event);
+
 #endif //CSW_C_EVENT_H

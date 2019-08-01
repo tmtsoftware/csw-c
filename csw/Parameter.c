@@ -15,6 +15,10 @@ CswParameter cswMakeParameter(CswKeyType keyType, const char *keyName, CswArrayV
     return p;
 }
 
+void cswFreeParameter(CswParameter param) {
+    // XXX TODO
+}
+
 // --- KeyTypes ---
 
 static const char *_keyTypeNames[] = {

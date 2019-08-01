@@ -37,6 +37,12 @@ CswEvent cswMakeEvent(CswEventType eventType, const char* source, const char* ev
     return event;
 }
 
+// Frees any allocated memory for the given event
+void cswFreeEvent(CswEvent event) {
+    // XXX TODO ...
+    free(event.eventId);
+}
+
 // Returns a CBOR map for the given Event argument
 cbor_item_t *cswEventAsMap(CswEvent event) {
     cbor_item_t *valueMap = cbor_new_definite_map(5);
@@ -75,7 +81,3 @@ CswEvent _cswEventFromMap(cbor_item_t* map) {
     return event;
 }
 
-// Frees any allocated memory for the given event
-void cswFreeEvent(CswEvent event) {
-    // XXX TODO ...
-}

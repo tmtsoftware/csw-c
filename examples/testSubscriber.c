@@ -52,7 +52,7 @@ static void callback(const char *key, const unsigned char *value, size_t len, vo
                 break;
             }
         }
-//        exit(1);
+        exit(1);
     }
 
     /* Pretty-print the result */
@@ -74,6 +74,10 @@ int main() {
 
     // -- publish --
     const char *key = "test.assembly.myAssemblyEvent";
+
+    // -- get --
+    CswRedisConnectorGetResult getResult = cswRedisConnectorGet(context, key);
+    callback(key, getResult.data, getResult.length, NULL);
 
     // -- subscribe --
     const char *keyList[1] = {key};

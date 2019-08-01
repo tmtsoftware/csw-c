@@ -83,5 +83,8 @@ char* _cswGetString(cbor_item_t* item);
 
 CswParameter cswMakeParameter(CswKeyType keyType, const char *keyName, CswArrayValue values, const char *units);
 
+// Free any allocated memory for the parameter
+void cswFreeParameter(CswParameter param);
+
 
 #endif //CSW_C_PARAMETER_H
