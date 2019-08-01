@@ -29,14 +29,17 @@ int cswEventPublisherPublish(CswEventPublisherContext context, CswEvent event) {
     size_t keyLen = strlen(event.source) + 1 + strlen(event.eventName);
     char eventKey[keyLen];
     sprintf(eventKey, "%s.%s", event.source, event.eventName);
-    cbor_item_t* item = cswEventAsMap(event);
+    cbor_item_t *item = cswEventAsMap(event);
+    unsigned char *buffer;
+    size_t buffer_size, length = cbor_serialize_alloc(item, &buffer, &buffer_size);
+    int status = cswRedisConnectorPublish(context.redisConnectorContext, eventKey, buffer, length);
 
-    int status = cswRedisConnectorPublish(context.redisConnectorContext, eventKey, item->data);
+//    // Pretty-print the result
+//    cbor_describe(item, stdout);
+//    fflush(stdout);
 
-    /* Pretty-print the result */
-    cbor_describe(item, stdout);
-    fflush(stdout);
-    /* Deallocate the result */
+    // Deallocate the result
+    free(buffer);
     cbor_decref(&item);
 
     return status;

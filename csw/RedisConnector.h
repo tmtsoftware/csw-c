@@ -13,7 +13,7 @@ typedef struct {
     redisAsyncContext *asyncRedis;
 } CswRedisConnectorContext;
 
-typedef void (*CswRedisConnectorCallback)(const char *key, const unsigned char *value, void *privateData);
+typedef void (*CswRedisConnectorCallback)(const char *key, const unsigned char *value, size_t len, void *privateData);
 
 typedef struct {
     CswRedisConnectorCallback callback;
@@ -27,7 +27,16 @@ void cswRedisConnectorClose(CswRedisConnectorContext context);
 CswRedisConnectorCallbackData* cswRedisConnectorSubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
                                                           CswRedisConnectorCallback callback, void *privateData);
 
-int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue);
+/**
+ * Sets and publishes the given key with the given encoded value and returns 0 if there were no errors
+ *
+ * @param context the return value from redisConnectorInit
+ * @param key the key to publish
+ * @param encodedValue the encoded value for the key
+ * @param length the length in bytes of the encoded value
+ * @return 0 if there were no errors
+ */
+int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue, size_t length);
 
 unsigned char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key);
 

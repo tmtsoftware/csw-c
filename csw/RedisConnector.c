@@ -66,7 +66,7 @@ static void _join(const char **arr, int len, const char *sep, char *result) {
 
 // Returns total length of the key strings in the array
 static int _getTotalSize(const char **keyList, int numKeys) {
-    int bufSize = 0;
+    size_t bufSize = 0;
     for (int i = 0; i < numKeys; i++)
         bufSize += strlen(keyList[i]);
     return bufSize;
@@ -83,8 +83,9 @@ static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *pri
         if (strcmp(reply->element[0]->str, "subscribe") != 0) {
             const char *channel = reply->element[1]->str;
             void *msg = reply->element[2]->str;
+            size_t len = reply->element[2]->len;
             CswRedisConnectorCallbackData *callbackData = privateData;
-            (*callbackData->callback)(channel, msg, callbackData->privateData);
+            (*callbackData->callback)(channel, msg, len, callbackData->privateData);
         }
     }
 }
@@ -152,11 +153,13 @@ int redisConnectorUnsubscribe(CswRedisConnectorContext context, const char **key
  * @param context the return value from redisConnectorInit
  * @param key the key to publish
  * @param encodedValue the encoded value for the key
+ * @param length the length in bytes of the encoded value
  * @return 0 if there were no errors
  */
-int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue) {
-    redisReply *reply1 = redisCommand(context.redis, "set %s %s", key, encodedValue);
-    redisReply *reply2 = redisCommand(context.redis, "publish %s %s", key, encodedValue);
+int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue, size_t length) {
+    //reply = redisCommand(context, "SET foo %b", value, (size_t) valuelen);
+    redisReply *reply1 = redisCommand(context.redis, "set %s %b", key, encodedValue, length);
+    redisReply *reply2 = redisCommand(context.redis, "publish %s %b", key, encodedValue, length);
     int status = 0;
     if (reply1 == NULL) {
         printf("Redis SET Error: %s\n", context.redis->errstr);
