@@ -53,31 +53,35 @@ typedef struct {
 // A Parameter (keys with values, units).
 typedef struct {
 
+    // Enum type of param key (not encoded)
     CswKeyType keyType;
 
-    char *keyName;
+    const char *keyName;
 
     CswArrayValue values;
 
     // See https://tmtsoftware.github.io/csw/0.7.0-RC1/messages/units.html for list of unit names.
-    char *units;
+    const char *units;
 } CswParameter;
 
 
-// A Struct (value when key is "StructKey").
+// A parameter set (also the value when key is "StructKey").
 typedef struct {
-    // a list of Parameters that make up the Struct
-    CswParameter *paramSet;
+    // a list of Parameters
+    CswParameter *params;
 
-    // The number of parameters in this Struct
+    // The number of parameters in this param set
     int numParams;
-} CswStruct;
+} CswParamSet;
 
 
 cbor_item_t *_cswParameterAsMap(CswParameter param);
 struct cbor_pair _cswMakeStringPair(const char *key, const char *value);
 struct cbor_pair _cswMakeItemPair(const char *key, cbor_item_t *value);
 struct cbor_pair _cswMakeParamSetItemPair(const CswParameter* paramSet, int numParams);
+char* _cswGetString(cbor_item_t* item);
+
+CswParameter cswMakeParameter(CswKeyType keyType, const char *keyName, CswArrayValue values, const char *units);
 
 
 #endif //CSW_C_PARAMETER_H

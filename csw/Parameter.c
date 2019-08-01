@@ -7,6 +7,13 @@
 #include "Parameter.h"
 #include "Coords.h"
 
+/**
+ * Constructor for CswParameter.
+ */
+CswParameter cswMakeParameter(CswKeyType keyType, const char *keyName, CswArrayValue values, const char *units) {
+    CswParameter p = {.keyType = keyType, .keyName = keyName, .values = values, .units = units};
+    return p;
+}
 
 // --- KeyTypes ---
 
@@ -117,58 +124,51 @@ static CswSolarSystemObject _solarSystemObjectValue(const char *solarSystemObjec
     return -1;
 }
 
-// ----
+// ---- To CBOR ---
 
-static cbor_item_t *_makeStringItem(const void *value) {
+static cbor_item_t *_makeStringItem(const char *value) {
     return cbor_move(cbor_build_string(value));
 }
 
-static cbor_item_t *_makeLongItem(const void *value) {
-    long v = *(long *) value;
-    if (v < 0)
-        return cbor_move(cbor_build_negint64(v));
+static cbor_item_t *_makeLongItem(long value) {
+    if (value < 0)
+        return cbor_move(cbor_build_negint64(value));
     else
-        return cbor_move(cbor_build_uint64(v));
+        return cbor_move(cbor_build_uint64(value));
 }
 
-static cbor_item_t *_makeIntItem(const void *value) {
-    int v = *(int *) value;
-    if (v < 0)
-        return cbor_move(cbor_build_negint32(v));
+static cbor_item_t *_makeIntItem(int value) {
+    if (value < 0)
+        return cbor_move(cbor_build_negint32(value));
     else
-        return cbor_move(cbor_build_uint32(v));
+        return cbor_move(cbor_build_uint32(value));
 }
 
-static cbor_item_t *_makeShortItem(const void *value) {
-    short v = *(short *) value;
-    if (v < 0)
-        return cbor_move(cbor_build_negint16(v));
+static cbor_item_t *_makeShortItem(short value) {
+    if (value < 0)
+        return cbor_move(cbor_build_negint16(value));
     else
-        return cbor_move(cbor_build_uint16(v));
+        return cbor_move(cbor_build_uint16(value));
 }
 
 // XXX TODO: make UTF8 compatible?
-static cbor_item_t *_makeCharItem(const void *value) {
-    signed char v = *(signed char *) value;
-    if (v < 0)
-        return cbor_move(cbor_build_negint8(v));
+static cbor_item_t *_makeCharItem(char value) {
+    if (value < 0)
+        return cbor_move(cbor_build_negint8(value));
     else
-        return cbor_move(cbor_build_uint8(v));
+        return cbor_move(cbor_build_uint8(value));
 }
 
-static cbor_item_t *_makeFloatItem(const void *value) {
-    float v = *(float *) value;
-    return cbor_move(cbor_build_float4(v));
+static cbor_item_t *_makeFloatItem(float value) {
+    return cbor_move(cbor_build_float4(value));
 }
 
-static cbor_item_t *_makeDoubleItem(const void *value) {
-    double v = *(double *) value;
-    return cbor_move(cbor_build_float8(v));
+static cbor_item_t *_makeDoubleItem(double value) {
+    return cbor_move(cbor_build_float8(value));
 }
 
-static cbor_item_t *_makeBooleanItem(const void *value) {
-    bool v = *(bool *) value;
-    return cbor_move(cbor_build_bool(v));
+static cbor_item_t *_makeBooleanItem(bool value) {
+    return cbor_move(cbor_build_bool(value));
 }
 
 static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, int index);
@@ -200,14 +200,14 @@ struct cbor_pair _cswMakeStringPair(const char *key, const char *value) {
 static struct cbor_pair _makeIntPair(const char *key, int value) {
     return (struct cbor_pair) {
             .key = _makeStringItem(key),
-            .value = _makeIntItem(&value)
+            .value = _makeIntItem(value)
     };
 }
 
 static struct cbor_pair _makeFloatPair(const char *key, float value) {
     return (struct cbor_pair) {
             .key = _makeStringItem(key),
-            .value = _makeFloatItem(&value)
+            .value = _makeFloatItem(value)
     };
 }
 
@@ -226,23 +226,22 @@ struct cbor_pair _cswMakeParamSetItemPair(const CswParameter* paramSet, int numP
     return _cswMakeItemPair("paramSet", array);
 }
 
-static cbor_item_t *_makeStructItem(const void *value) {
-    CswStruct *myStruct = (CswStruct *) value;
+static cbor_item_t *_makeStructItem(CswParamSet value) {
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeParamSetItemPair(myStruct->paramSet, myStruct->numParams));
-
+    cbor_map_add(map, _cswMakeParamSetItemPair(value.params, value.numParams));
+    return map;
 }
 
-static cbor_item_t *_makeEqCoordItem(CswEqCoord *value) {
+static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(6);
-    cbor_map_add(valueMap, _cswMakeStringPair("tag", value->tag.name));
-    cbor_map_add(valueMap, _makeIntPair("dec", value->dec.uas));
-    cbor_map_add(valueMap, _cswMakeStringPair("frame", _eqFrameName(value->frame)));
-    cbor_map_add(valueMap, _cswMakeStringPair("catalogName", value->catalogName));
+    cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
+    cbor_map_add(valueMap, _makeIntPair("dec", value.dec.uas));
+    cbor_map_add(valueMap, _cswMakeStringPair("frame", _eqFrameName(value.frame)));
+    cbor_map_add(valueMap, _cswMakeStringPair("catalogName", value.catalogName));
 
     cbor_item_t *pmMap = cbor_new_definite_map(2);
-    cbor_map_add(pmMap, _makeFloatPair("pmx", value->pm.pmx));
-    cbor_map_add(pmMap, _makeFloatPair("pmy", value->pm.pmy));
+    cbor_map_add(pmMap, _makeFloatPair("pmx", value.pm.pmx));
+    cbor_map_add(pmMap, _makeFloatPair("pmy", value.pm.pmy));
     cbor_map_add(valueMap, _cswMakeItemPair("pm", pmMap));
 
     cbor_item_t *map = cbor_new_definite_map(1);
@@ -250,144 +249,143 @@ static cbor_item_t *_makeEqCoordItem(CswEqCoord *value) {
     return map;
 }
 
-static cbor_item_t *_makeSolarSystemCoordItem(const CswSolarSystemCoord *value) {
+static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(2);
-    cbor_map_add(valueMap, _cswMakeStringPair("tag", value->tag.name));
-    cbor_map_add(valueMap, _cswMakeStringPair("frame", _solarSystemObjectName(value->body)));
+    cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
+    cbor_map_add(valueMap, _cswMakeStringPair("frame", _solarSystemObjectName(value.body)));
 
     cbor_item_t *map = cbor_new_definite_map(1);
     cbor_map_add(map, _cswMakeItemPair("CswSolarSystemCoord", valueMap));
     return map;
 }
 
-static cbor_item_t *_makeMinorPlanetCoordItem(const CswMinorPlanetCoord *value) {
+static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(8);
-    cbor_map_add(valueMap, _cswMakeStringPair("tag", value->tag.name));
-    cbor_map_add(valueMap, _makeFloatPair("epoch", value->epoch));
-    cbor_map_add(valueMap, _makeIntPair("inclination", value->inclination.uas));
-    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value->longAscendingNode.uas));
-    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value->argOfPerihelion.uas));
-    cbor_map_add(valueMap, _makeFloatPair("meanDistance", value->meanDistance));
-    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value->eccentricity));
-    cbor_map_add(valueMap, _makeIntPair("meanAnomaly", value->meanAnomaly.uas));
+    cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
+    cbor_map_add(valueMap, _makeFloatPair("epoch", value.epoch));
+    cbor_map_add(valueMap, _makeIntPair("inclination", value.inclination.uas));
+    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value.longAscendingNode.uas));
+    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value.argOfPerihelion.uas));
+    cbor_map_add(valueMap, _makeFloatPair("meanDistance", value.meanDistance));
+    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value.eccentricity));
+    cbor_map_add(valueMap, _makeIntPair("meanAnomaly", value.meanAnomaly.uas));
 
     cbor_item_t *map = cbor_new_definite_map(1);
     cbor_map_add(map, _cswMakeItemPair("CswMinorPlanetCoord", valueMap));
     return map;
 }
 
-static cbor_item_t *_makeCometCoordItem(const CswCometCoord *value) {
+static cbor_item_t *_makeCometCoordItem( CswCometCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(7);
-    cbor_map_add(valueMap, _cswMakeStringPair("tag", value->tag.name));
-    cbor_map_add(valueMap, _makeFloatPair("epochOfPerihelion", value->epochOfPerihelion));
-    cbor_map_add(valueMap, _makeIntPair("inclination", value->inclination.uas));
-    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value->longAscendingNode.uas));
-    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value->argOfPerihelion.uas));
-    cbor_map_add(valueMap, _makeFloatPair("perihelionDistance", value->perihelionDistance));
-    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value->eccentricity));
+    cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
+    cbor_map_add(valueMap, _makeFloatPair("epochOfPerihelion", value.epochOfPerihelion));
+    cbor_map_add(valueMap, _makeIntPair("inclination", value.inclination.uas));
+    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value.longAscendingNode.uas));
+    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value.argOfPerihelion.uas));
+    cbor_map_add(valueMap, _makeFloatPair("perihelionDistance", value.perihelionDistance));
+    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value.eccentricity));
 
     cbor_item_t *map = cbor_new_definite_map(1);
     cbor_map_add(map, _cswMakeItemPair("CswCometCoord", valueMap));
     return map;
 }
 
-static cbor_item_t *_makeAltAzCoordItem(const CswAltAzCoord *value) {
+static cbor_item_t *_makeAltAzCoordItem(CswAltAzCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(3);
-    cbor_map_add(valueMap, _cswMakeStringPair("tag", value->tag.name));
-    cbor_map_add(valueMap, _makeIntPair("alt", value->alt.uas));
-    cbor_map_add(valueMap, _makeIntPair("az", value->az.uas));
+    cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
+    cbor_map_add(valueMap, _makeIntPair("alt", value.alt.uas));
+    cbor_map_add(valueMap, _makeIntPair("az", value.az.uas));
 
     cbor_item_t *map = cbor_new_definite_map(1);
     cbor_map_add(map, _cswMakeItemPair("CswAltAzCoord", valueMap));
     return map;
 }
 
-static cbor_item_t *_makeCoordItem(const void *value) {
-    CswCoord *coord = (CswCoord *) value;
-    switch (coord->keyType) {
+static cbor_item_t *_makeCoordItem(CswCoord value) {
+    switch (value.coordBase.keyType) {
         case EqCoordKeyType:
-            return _makeEqCoordItem((CswEqCoord *) value);
+            return _makeEqCoordItem(value.eqCoord);
         case SolarSystemCoordKeyType:
-            return _makeSolarSystemCoordItem((CswSolarSystemCoord *) value);
+            return _makeSolarSystemCoordItem(value.solarSystemCoord);
         case MinorPlanetCoordKeyType:
-            return _makeMinorPlanetCoordItem((CswMinorPlanetCoord *) value);
+            return _makeMinorPlanetCoordItem(value.minorPlanetCoord);
         case CometCoordKeyType:
-            return _makeCometCoordItem((CswCometCoord *) value);
+            return _makeCometCoordItem(value.cometCoord);
         case AltAzCoordKeyType:
-            return _makeAltAzCoordItem((CswAltAzCoord *) value);
+            return _makeAltAzCoordItem(value.altAzCoord);
     }
 }
 
 
 // Returns a cbor item for the parameter value at the given index
 static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, int index) {
-    const void *value = values + index;
     switch (keyType) {
         case ChoiceKey:
         case UTCTimeKey:
         case TAITimeKey:
         case StringKey:
-            return _makeStringItem(value);
+            return _makeStringItem(values + index);
         case StructKey:
-            return _makeStructItem(value);
+            return _makeStructItem(((CswParamSet*)values)[index]);
         case RaDecKey:
             return NULL; // TODO: FIXME
         case EqCoordKey:
-            return _makeCoordItem(value);
+            return _makeEqCoordItem(((CswEqCoord*)values)[index]);
         case SolarSystemCoordKey:
-            return _makeSolarSystemCoordItem(value);
+            return _makeSolarSystemCoordItem(((CswSolarSystemCoord*)values)[index]);
         case MinorPlanetCoordKey:
-            return _makeMinorPlanetCoordItem(value);
+            return _makeMinorPlanetCoordItem(((CswMinorPlanetCoord*)values)[index]);
         case CometCoordKey:
-            return _makeCometCoordItem(value);
+            return _makeCometCoordItem(((CswCometCoord*)values)[index]);
         case AltAzCoordKey:
-            return _makeAltAzCoordItem(value);
+            return _makeAltAzCoordItem(((CswAltAzCoord*)values)[index]);
         case CoordKey:
-            return _makeCoordItem(value);
+            return _makeCoordItem(((CswCoord*)values)[index]);
         case BooleanKey:
-            return _makeBooleanItem(value);
+            return _makeBooleanItem(((bool*)values)[index]);
         case CharKey:
-            return _makeCharItem(value);
+            return _makeCharItem(((char*)values)[index]);
         case ByteKey:
-            return _makeCharItem(value);
+            // XXX TODO FIXME: Need to use bytestring format here
+            return _makeCharItem(((char*)values)[index]);
         case ShortKey:
-            return _makeShortItem(value);
+            return _makeShortItem(((short*)values)[index]);
         case LongKey:
-            return _makeLongItem(value);
+            return _makeLongItem(((long*)values)[index]);
         case IntKey:
-            return _makeIntItem(value);
+            return _makeIntItem(((int*)values)[index]);
         case FloatKey:
-            return _makeFloatItem(value);
+            return _makeFloatItem(((float*)values)[index]);
         case DoubleKey:
-            return _makeDoubleItem(value);
+            return _makeDoubleItem(((double*)values)[index]);
         case ByteArrayKey: {
             // TODO: Test this
-//            return _makeArrayItem(ByteKey, (CswArrayValue *) value);
-            CswArrayValue *ar = (CswArrayValue *) value;
+//            return _makeArrayItem(ByteKey, (CswArrayValue *) values);
+            CswArrayValue *ar = (CswArrayValue *) values;
             return cbor_build_bytestring((const unsigned char *) ar->values, ar->numValues);
         }
         case ShortArrayKey:
-            return _makeArrayItem(ShortKey, (CswArrayValue *) value);
+            return _makeArrayItem(ShortKey, (CswArrayValue *) values);
         case LongArrayKey:
-            return _makeArrayItem(LongKey, (CswArrayValue *) value);
+            return _makeArrayItem(LongKey, (CswArrayValue *) values);
         case IntArrayKey:
-            return _makeArrayItem(IntKey, (CswArrayValue *) value);
+            return _makeArrayItem(IntKey, (CswArrayValue *) values);
         case FloatArrayKey:
-            return _makeArrayItem(FloatKey, (CswArrayValue *) value);
+            return _makeArrayItem(FloatKey, (CswArrayValue *) values);
         case DoubleArrayKey:
-            return _makeArrayItem(DoubleKey, (CswArrayValue *) value);
+            return _makeArrayItem(DoubleKey, (CswArrayValue *) values);
         case ByteMatrixKey:
-            return _makeMatrixItem(ByteKey, (CswArrayValue *) value);
+            return _makeMatrixItem(ByteKey, (CswArrayValue *) values);
         case ShortMatrixKey:
-            return _makeMatrixItem(ShortKey, (CswArrayValue *) value);
+            return _makeMatrixItem(ShortKey, (CswArrayValue *) values);
         case LongMatrixKey:
-            return _makeMatrixItem(LongKey, (CswArrayValue *) value);
+            return _makeMatrixItem(LongKey, (CswArrayValue *) values);
         case IntMatrixKey:
-            return _makeMatrixItem(IntKey, (CswArrayValue *) value);
+            return _makeMatrixItem(IntKey, (CswArrayValue *) values);
         case FloatMatrixKey:
-            return _makeMatrixItem(FloatKey, (CswArrayValue *) value);
+            return _makeMatrixItem(FloatKey, (CswArrayValue *) values);
         case DoubleMatrixKey:
-            return _makeMatrixItem(DoubleKey, (CswArrayValue *) value);
+            return _makeMatrixItem(DoubleKey, (CswArrayValue *) values);
         default:
             return NULL;
     }
@@ -423,18 +421,36 @@ cbor_item_t *_cswParameterAsMap(CswParameter param) {
 }
 
 
+// ---- From CBOR ---
 
-//// Returns an Parameter for the given CBOR map
-//CswParameter parameterFromMap(cbor_item_t *map) {
-//    CswParameter param = {};
-//    for (size_t i = 0; i < cbor_map_size(map); i++) {
-//        struct cbor_pair pair = cbor_map_handle(map)[i];
-//        char *key = (char *) cbor_string_handle(pair.key);
-//        if (strncmp(key, "seconds", cbor_string_length(pair.key)) == 0) {
-//            param.seconds = cbor_get_int(pair.value);
-//        } else if (strncmp(key, "nanos", cbor_string_length(pair.key)) == 0) {
-//            param.nanos = cbor_get_int(pair.value);
-//        }
-//    }
-//    return param;
-//}
+// Since the string values returned from CBOR are not null-terminated, we need to allocate
+// a null-terminated copy. Note that the return value needs to be freed at some point.
+char* _cswGetString(cbor_item_t* item) {
+    return strndup((char*)cbor_string_handle(item), (int)cbor_string_length(item));
+}
+
+// Returns an Parameter for the given CBOR map
+CswParameter _cswParameterFromMap(cbor_item_t *map) {
+    CswParameter param = {};
+    for (size_t i = 0; i < cbor_map_size(map); i++) {
+        struct cbor_pair pair = cbor_map_handle(map)[i];
+        char *key = (char *) cbor_string_handle(pair.key);
+        param.keyType = _keyTypeValue(key);
+
+        // XXX TODO: In progress...
+    }
+    return param;
+}
+
+// Makes an array of CswParameters from the given CBOR Item.
+// The return type is a CswStruct, since it contains an array or params as well as the length of the array.
+CswParamSet _cswGetParamSet(cbor_item_t* item) {
+    CswParamSet paramSet = {};
+    paramSet.numParams = cbor_array_size(item);
+    paramSet.params = malloc(paramSet.numParams * sizeof(CswParameter));
+    for (size_t i = 0; i < paramSet.numParams; i++) {
+        paramSet.params[i] = _cswParameterFromMap(cbor_array_handle(item)[i]);
+    }
+    return paramSet;
+}
+

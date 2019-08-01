@@ -154,7 +154,7 @@ int redisConnectorUnsubscribe(CswRedisConnectorContext context, const char **key
  * @param encodedValue the encoded value for the key
  * @return 0 if there were no errors
  */
-int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const char *encodedValue) {
+int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue) {
     redisReply *reply1 = redisCommand(context.redis, "set %s %s", key, encodedValue);
     redisReply *reply2 = redisCommand(context.redis, "publish %s %s", key, encodedValue);
     int status = 0;
@@ -180,7 +180,7 @@ int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, 
  * @param key the key to get
  * @return the (encoded) value for the key
  */
-char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
+unsigned char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
     redisReply *reply = redisCommand(context.redis, "GET %s", key);
     if (reply == NULL) {
         printf("Redis Error: %s\n", context.redis->errstr);
@@ -188,7 +188,7 @@ char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
     } else {
         char *result = strdup(reply->str);
         freeReplyObject(reply);
-        return result;
+        return (unsigned char *)result;
     }
 }
 

@@ -18,5 +18,15 @@ cbor_item_t *_cswEventTimeAsMap(CswEventTime et);
 // Returns an EventTime for the given CBOR map
 CswEventTime _cswEventTimeFromMap(cbor_item_t* map);
 
+/**
+ * Returns an instance containing the current time
+ */
+CswEventTime cswEventTime();
+
+/**
+ * Constructor
+ */
+CswEventTime cswMakeEventTime(long seconds, int nanos);
+
 
 #endif //CSW_C_EVENTTIME_H

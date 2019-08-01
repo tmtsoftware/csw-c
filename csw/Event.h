@@ -17,10 +17,10 @@ typedef struct {
     CswEventType eventType;
 
     // prefix representing source of the event
-    char* source;
+    const char* source;
 
     // the name of event
-    char* eventName;
+    const char* eventName;
 
     // list of CswParameter (keys with values)
     CswParameter* paramSet;
@@ -35,5 +35,11 @@ typedef struct {
     char* eventId;
 } CswEvent;
 
+
+// Returns a CBOR map for the given Event argument
+cbor_item_t *cswEventAsMap(CswEvent event);
+
+// Event constructor
+CswEvent cswMakeEvent(CswEventType eventType, const char* source, const char* eventName, CswParamSet paramSet);
 
 #endif //CSW_C_EVENT_H

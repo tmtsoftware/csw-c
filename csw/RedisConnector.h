@@ -13,7 +13,7 @@ typedef struct {
     redisAsyncContext *asyncRedis;
 } CswRedisConnectorContext;
 
-typedef void (*CswRedisConnectorCallback)(const char *key, const char *value, void *privateData);
+typedef void (*CswRedisConnectorCallback)(const char *key, const unsigned char *value, void *privateData);
 
 typedef struct {
     CswRedisConnectorCallback callback;
@@ -27,9 +27,9 @@ void cswRedisConnectorClose(CswRedisConnectorContext context);
 CswRedisConnectorCallbackData* cswRedisConnectorSubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
                                                           CswRedisConnectorCallback callback, void *privateData);
 
-int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const char *encodedValue);
+int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue);
 
-char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key);
+unsigned char *cswRedisConnectorGet(CswRedisConnectorContext context, const char *key);
 
 
 #endif //CSW_C_REDISCONNECTOR_H

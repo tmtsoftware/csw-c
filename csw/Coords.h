@@ -54,7 +54,7 @@ typedef enum {
 typedef struct {
     CswCoordKeyType keyType; // needed to determine "virtual" type of coord
     CswTag tag;
-} CswCoord;
+} CswCoordBase;
 
 // Represents equatorial coordinates (mirrors class of same name in the CSW Scala code).
 typedef struct {
@@ -106,5 +106,15 @@ typedef struct {
     CswAngle alt;
     CswAngle az;
 } CswAltAzCoord;
+
+// Used as the type when key is CoordKey, since an array of these can contain different coord types
+typedef union {
+    CswCoordBase coordBase;
+    CswEqCoord eqCoord;
+    CswSolarSystemCoord solarSystemCoord;
+    CswMinorPlanetCoord minorPlanetCoord;
+    CswCometCoord cometCoord;
+    CswAltAzCoord altAzCoord;
+} CswCoord;
 
 #endif //CSW_C_COORDS_H

@@ -1,5 +1,5 @@
 
-add_library(csw Event.c Event.h RedisConnector.c RedisConnector.h Parameter.h EventTime.h Parameter.c EventTime.c Coords.h)
+add_library(csw Event.c Event.h RedisConnector.c RedisConnector.h Parameter.h EventTime.h Parameter.c EventTime.c Coords.h EventPublisher.c EventPublisher.h)
 
 #find_library( microhttpd REQUIRED )
 find_package(hiredis REQUIRED)

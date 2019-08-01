@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <hiredis/adapters/libev.h>
 
-static void callback(const char *key, const char *value, void *privateData) {
+static void callback(const char *key, const unsigned char *value, void *privateData) {
     printf("Subscribe callback: %s = %s\n", key, value);
 }
 
@@ -22,11 +22,11 @@ int main() {
     // -- publish --
     const char *key = "mytestkey1";
     const char *encodedValue = "abcdef";
-    int pubStatus = cswRedisConnectorPublish(context, key, encodedValue);
+    int pubStatus = cswRedisConnectorPublish(context, key, (unsigned char*)encodedValue);
     assert(pubStatus == 0);
 
     // -- get --
-    const char *value = cswRedisConnectorGet(context, key);
+    const char *value = (char*)cswRedisConnectorGet(context, key);
     assert(strcmp(value, encodedValue) == 0);
 
     // -- subscribe --
@@ -34,13 +34,13 @@ int main() {
     CswRedisConnectorCallbackData* callbackData = cswRedisConnectorSubscribe(context, keyList, 1, callback, NULL);
     assert(callbackData != NULL);
 
-    int pubStatus2 = cswRedisConnectorPublish(context, key, "12345");
+    int pubStatus2 = cswRedisConnectorPublish(context, key, (unsigned char*)"12345");
     assert(pubStatus2 == 0);
-    assert(strcmp(cswRedisConnectorGet(context, key), "12345") == 0);
+    assert(strcmp((char*)cswRedisConnectorGet(context, key), "12345") == 0);
 
-    int pubStatus3 = cswRedisConnectorPublish(context, key, "Test message");
+    int pubStatus3 = cswRedisConnectorPublish(context, key, (unsigned char*)"Test message");
     assert(pubStatus3 == 0);
-    assert(strcmp(cswRedisConnectorGet(context, key), "Test message") == 0);
+    assert(strcmp((char*)cswRedisConnectorGet(context, key), "Test message") == 0);
 
     ev_loop(EV_DEFAULT_ 0);
     return 0;
