@@ -2,13 +2,6 @@
 // Created by abrighto on 8/1/19.
 //
 
-//intParam = Parameter("IntValue", "IntKey", [42], "arcsec")
-//intArrayParam = Parameter("IntArrayValue", "IntArrayKey", [[1,2,3,4], [5,6,7,8]])
-//floatArrayParam = Parameter("FloatArrayValue", "FloatArrayKey", [[1.2, 2.3, 3.4], [5.6, 7.8, 9.1]], "marcsec")
-//intMatrixParam = Parameter("IntMatrixValue", "IntMatrixKey", [[[1,2,3,4], [5,6,7,8]],[[-1,-2,-3,-4], [-5,-6,-7,-8]]], "meter")
-//event = SystemEvent("test.assembly", "myAssemblyEvent", [intParam, intArrayParam, floatArrayParam, intMatrixParam])
-//self.pub.publish(event)
-
 #include "csw/Event.h"
 #include "csw/EventPublisher.h"
 #include "csw/Parameter.h"

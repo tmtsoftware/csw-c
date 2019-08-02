@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <hiredis/adapters/libev.h>
 
+// XXX TODO: Event Subscribe API is not implemented yet. This is using Redis directly.
+// XXX TODO: Still need to add support for decoding CBOR to Event.
+
 static void callback(const char *key, const unsigned char *value, size_t len, void *privateData) {
     printf("Subscribe callback: %s = %d bytes\n", key, (int)len);
 
