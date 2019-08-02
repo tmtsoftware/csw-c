@@ -10,8 +10,8 @@ int main() {
     CswEventPublisherContext publisher = cswEventPublisherInit();
 
     // -- IntKey parameter contains one or more int values --
-    int values1[] = {42};
-    CswArrayValue arrayValues1 = {.values = values1, .numValues = 1};
+    int values1[] = {42, 43};
+    CswArrayValue arrayValues1 = {.values = values1, .numValues = 2};
     CswParameter intParam = cswMakeParameter("IntValue", IntKey, arrayValues1, "arcsec");
 
     // -- IntArrayKey parameter contains one or more int array values --
