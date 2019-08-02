@@ -12,7 +12,7 @@ int main() {
 
     double ar[] = {1.1, 2.2, 3.3};
     CswArrayValue values = {.values = ar, .numValues = 3};
-    CswParameter param = cswMakeParameter(DoubleKey, "assemblyEventValue", values, "arcmin");
+    CswParameter param = cswMakeParameter("assemblyEventValue", DoubleKey, values, "arcmin");
     CswParameter params[] = {param};
     CswParamSet paramSet = {.params = params, .numParams = 1};
     CswEvent event = cswMakeEvent(SystemEvent, "test.assembly", "myAssemblyEvent", paramSet);

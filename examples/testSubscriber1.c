@@ -11,8 +11,6 @@
 #include <hiredis/adapters/libev.h>
 
 static void callback(const char *key, const unsigned char *value, size_t len, void *privateData) {
-//    printf("Subscribe callback: %s = %s\n", key, value);
-
     printf("Subscribe callback: %s = %d bytes\n", key, (int)len);
 
     /* Assuming `buffer` contains `length` bytes of input data */
@@ -64,7 +62,7 @@ static void callback(const char *key, const unsigned char *value, size_t len, vo
 
 }
 
-// XXX TODO: TEMP
+// XXX TODO: TEMP: until event subscriber code is implemented
 
 int main() {
     CswRedisConnectorContext context = cswRedisConnectorInit();

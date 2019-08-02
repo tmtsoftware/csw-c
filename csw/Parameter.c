@@ -10,7 +10,7 @@
 /**
  * Constructor for CswParameter.
  */
-CswParameter cswMakeParameter(CswKeyType keyType, const char *keyName, CswArrayValue values, const char *units) {
+CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units) {
     CswParameter p = {.keyType = keyType, .keyName = keyName, .values = values, .units = units};
     return p;
 }
@@ -136,21 +136,21 @@ static cbor_item_t *_makeStringItem(const char *value) {
 
 static cbor_item_t *_makeLongItem(long value) {
     if (value < 0)
-        return cbor_move(cbor_build_negint64(value));
+        return cbor_move(cbor_build_negint64(-value - 1));
     else
         return cbor_move(cbor_build_uint64(value));
 }
 
 static cbor_item_t *_makeIntItem(int value) {
     if (value < 0)
-        return cbor_move(cbor_build_negint32(value));
+        return cbor_move(cbor_build_negint32(-value - 1));
     else
         return cbor_move(cbor_build_uint32(value));
 }
 
 static cbor_item_t *_makeShortItem(short value) {
     if (value < 0)
-        return cbor_move(cbor_build_negint16(value));
+        return cbor_move(cbor_build_negint16(-value - 1));
     else
         return cbor_move(cbor_build_uint16(value));
 }
@@ -158,7 +158,7 @@ static cbor_item_t *_makeShortItem(short value) {
 // XXX TODO: make UTF8 compatible?
 static cbor_item_t *_makeCharItem(char value) {
     if (value < 0)
-        return cbor_move(cbor_build_negint8(value));
+        return cbor_move(cbor_build_negint8(-value - 1));
     else
         return cbor_move(cbor_build_uint8(value));
 }
@@ -184,15 +184,6 @@ static cbor_item_t *_makeArrayItem(CswKeyType keyType, const CswArrayValue *valu
     }
     return array;
 }
-
-static cbor_item_t *_makeMatrixItem(CswKeyType keyType, const CswArrayValue *values) {
-    cbor_item_t *array = cbor_new_definite_array(values->numValues);
-    for (int i = 0; i < values->numValues; i++) {
-        cbor_array_push(array, _makeArrayItem(keyType, (CswArrayValue *) (values->values + i)));
-    }
-    return array;
-}
-
 
 struct cbor_pair _cswMakeStringPair(const char *key, const char *value) {
     return (struct cbor_pair) {
@@ -369,27 +360,27 @@ static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, in
             return cbor_build_bytestring((const unsigned char *) ar->values, ar->numValues);
         }
         case ShortArrayKey:
-            return _makeArrayItem(ShortKey, (CswArrayValue *) values);
+            return _makeArrayItem(ShortKey, ((CswArrayValue *) values) + index);
         case LongArrayKey:
-            return _makeArrayItem(LongKey, (CswArrayValue *) values);
+            return _makeArrayItem(LongKey, ((CswArrayValue *) values) + index);
         case IntArrayKey:
-            return _makeArrayItem(IntKey, (CswArrayValue *) values);
+            return _makeArrayItem(IntKey, ((CswArrayValue *) values) + index);
         case FloatArrayKey:
-            return _makeArrayItem(FloatKey, (CswArrayValue *) values);
+            return _makeArrayItem(FloatKey, ((CswArrayValue *) values) + index);
         case DoubleArrayKey:
-            return _makeArrayItem(DoubleKey, (CswArrayValue *) values);
+            return _makeArrayItem(DoubleKey, ((CswArrayValue *) values) + index);
         case ByteMatrixKey:
-            return _makeMatrixItem(ByteKey, (CswArrayValue *) values);
+            return _makeArrayItem(ByteArrayKey, ((CswArrayValue *) values) + index);
         case ShortMatrixKey:
-            return _makeMatrixItem(ShortKey, (CswArrayValue *) values);
+            return _makeArrayItem(ShortArrayKey, ((CswArrayValue *) values) + index);
         case LongMatrixKey:
-            return _makeMatrixItem(LongKey, (CswArrayValue *) values);
+            return _makeArrayItem(LongArrayKey, ((CswArrayValue *) values) + index);
         case IntMatrixKey:
-            return _makeMatrixItem(IntKey, (CswArrayValue *) values);
+            return _makeArrayItem(IntArrayKey, ((CswArrayValue *) values) + index);
         case FloatMatrixKey:
-            return _makeMatrixItem(FloatKey, (CswArrayValue *) values);
+            return _makeArrayItem(FloatArrayKey, ((CswArrayValue *) values) + index);
         case DoubleMatrixKey:
-            return _makeMatrixItem(DoubleKey, (CswArrayValue *) values);
+            return _makeArrayItem(DoubleArrayKey, ((CswArrayValue *) values) + index);
         default:
             return NULL;
     }
