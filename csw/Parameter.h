@@ -42,9 +42,13 @@ typedef enum {
     DoubleMatrixKey
 } CswKeyType;
 
-typedef struct {
-    // An array of primitive values, or a nested array for array and matrix types or the csw "struct" type.
-    void *values;
+typedef struct CswArrayValue {
+    // An array of primitive values, or an array of CSwArrayValue for array and matrix types or the csw "struct" type.
+    union {
+        void *values;
+        int* intValues;
+        struct CswArrayValue *arrayValues;
+    };
 
     // The number of values in the above array
     int numValues;
@@ -82,6 +86,9 @@ struct cbor_pair _cswMakeStringPair(const char *key, const char *value);
 struct cbor_pair _cswMakeItemPair(const char *key, cbor_item_t *value);
 struct cbor_pair _cswMakeParamSetItemPair(const CswParameter* paramSet, int numParams);
 char* _cswGetString(cbor_item_t* item);
+
+CswArrayValue makeArrayValues(void** values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize);
+//CswArrayValue makeMatrixValues(void*** values, int numMatrices, int numRows, int numCols);
 
 CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units);
 

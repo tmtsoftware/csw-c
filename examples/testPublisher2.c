@@ -6,38 +6,47 @@
 #include "csw/EventPublisher.h"
 #include "csw/Parameter.h"
 
-int main() {
-    CswEventPublisherContext publisher = cswEventPublisherInit();
 
+static void publishInts(CswEventPublisherContext publisher) {
     // -- IntKey parameter contains one or more int values --
-    int values1[] = {42, 43};
-    CswArrayValue arrayValues1 = {.values = values1, .numValues = 2};
+    int intValues[] = {42, 43};
+    CswArrayValue arrayValues1 = {.values = intValues, .numValues = 2};
     CswParameter intParam = cswMakeParameter("IntValue", IntKey, arrayValues1, "arcsec");
 
     // -- IntArrayKey parameter contains one or more int array values --
-    int values2[2][4] = {
-            {1,2,3,4},
-            {5,6,7,8}
+    int intArrayValues[2][4] = {
+            {1, 2, 3, 4},
+            {5, 6, 7, 8}
     };
-    CswArrayValue a1 = {.values = values2[0], .numValues = 4};
-    CswArrayValue a2 = {.values = values2[1], .numValues = 4};
-    CswArrayValue aa[] = {a1, a2};
-    CswArrayValue arrayValues2 = {.values = aa, .numValues = 2};
-    CswParameter intArrayParam = cswMakeParameter("IntArrayValue", IntArrayKey, arrayValues2, "arcsec");
+    CswArrayValue intArrayHolder[2];
+    CswParameter intArrayParam = cswMakeParameter(
+            "IntArrayValue",
+            IntArrayKey,
+            makeArrayValues((void **) intArrayValues, 2, intArrayHolder, 4),
+            "arcsec");
+
 
     // -- IntMatrixKey parameter contains one or more int matrix values (Sorry, this gets ugly in C...) --
-
-    int values3[2][4] = {
-            {11,-22,33,-44},
-            {-55,66,-77,88}
+    int intMatrixValues[2][2][4] = {
+            {
+                    {1,  2,   3,  4},
+                    {5,   6,  7,   8}
+            },
+            {
+                    {11, -22, 33, -44},
+                    {-55, 66, -77, 88}
+            }
     };
-    CswArrayValue b1 = {.values = values3[0], .numValues = 4};
-    CswArrayValue b2 = {.values = values3[1], .numValues = 4};
-    CswArrayValue ba[] = {b1, b2};
-    CswArrayValue arrayValues3 = {.values = ba, .numValues = 2};
-    CswArrayValue ma[] = {arrayValues2, arrayValues3};
 
-    CswArrayValue matrixValues = {.values = ma, .numValues = 2};
+//    CswArrayValue matrixValues = makeMatrixValues((void***)intMatrixValues, 2, 2, 4);
+
+    CswArrayValue arrayHolder[2][2];
+    CswArrayValue ar[] = {
+            makeArrayValues((void **) intMatrixValues[0], 2, arrayHolder[0], 4),
+            makeArrayValues((void **) intMatrixValues[1], 2, arrayHolder[1], 4),
+    };
+    CswArrayValue matrixValues = {.arrayValues = ar, .numValues = 2};
+
     CswParameter intMatrixParam = cswMakeParameter("IntMatrixValue", IntMatrixKey, matrixValues, "arcsec");
 
     // -- ParamSet
@@ -52,4 +61,68 @@ int main() {
 
     // -- Cleanup --
     cswFreeEvent(event);
+}
+
+static void publishDoubles(CswEventPublisherContext publisher) {
+    // -- DoubleKey parameter contains one or more double values --
+    double doubleValues[] = {42.1, 43.5};
+    CswArrayValue arrayValues1 = {.values = doubleValues, .numValues = 2};
+    CswParameter doubleParam = cswMakeParameter("DoubleValue", DoubleKey, arrayValues1, "arcsec");
+
+    // -- DoubleArrayKey parameter contains one or more double array values --
+    double doubleArrayValues[2][4] = {
+            {1.1, 2.2, 3.3, 4.4},
+            {5.5, 6.6, 7.7, 8.8}
+    };
+    CswArrayValue doubleArrayHolder[2];
+    CswParameter doubleArrayParam = cswMakeParameter(
+            "DoubleArrayValue",
+            DoubleArrayKey,
+            makeArrayValues((void **) doubleArrayValues, 2, doubleArrayHolder, 4),
+            "arcsec");
+
+
+    // -- DoubleMatrixKey parameter contains one or more double matrix values (Sorry, this gets ugly in C...) --
+    double doubleMatrixValues[2][2][4] = {
+            {
+                    {1.3,  2.4,   3.5,  4.6},
+                    {5.7,   6.8,  7.9,   8.0}
+            },
+            {
+                    {11.1, -22.2, 33.3, -44.4},
+                    {-55.5, 66.6, -77.7, 88.8}
+            }
+    };
+
+//    CswArrayValue matrixValues = makeMatrixValues((void***)doubleMatrixValues, 2, 2, 4);
+
+    CswArrayValue arrayHolder[2][2];
+    CswArrayValue ar[] = {
+            makeArrayValues((void **) doubleMatrixValues[0], 2, arrayHolder[0], 4),
+            makeArrayValues((void **) doubleMatrixValues[1], 2, arrayHolder[1], 4),
+    };
+    CswArrayValue matrixValues = {.arrayValues = ar, .numValues = 2};
+
+    CswParameter doubleMatrixParam = cswMakeParameter("DoubleMatrixValue", DoubleMatrixKey, matrixValues, "arcsec");
+
+    // -- ParamSet
+    CswParameter params[] = {doubleParam, doubleArrayParam, doubleMatrixParam};
+    CswParamSet paramSet = {.params = params, .numParams = 3};
+
+    // -- Event --
+    CswEvent event = cswMakeEvent(SystemEvent, "test.assembly", "myAssemblyEvent", paramSet);
+
+    // -- Publish --
+    cswEventPublisherPublish(publisher, event);
+
+    // -- Cleanup --
+    cswFreeEvent(event);
+}
+
+int main() {
+    CswEventPublisherContext publisher = cswEventPublisherInit();
+
+    publishInts(publisher);
+    publishDoubles(publisher);
+    // TODO: publish other types...
 }

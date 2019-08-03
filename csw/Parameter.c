@@ -227,6 +227,42 @@ static cbor_item_t *_makeStructItem(CswParamSet value) {
     return map;
 }
 
+/**
+ * Creates an array of array values for *ArrayKey types.
+ *
+ * @param values a two dim array of the form: int values3[2][4] = { {11,-22,33,-44}, {-55,66,-77,88} };
+ * In this case there are two values, each of which is an array with 4 items.
+ *
+ * @param numArrays the number of array values
+ *
+ * @param numArrays the number of array values
+ *
+ * @param arrayValues an array of the correct size to hold the values. If null, space will be allocated with malloc,
+ * in which case it should be freed by calling free(result.values)
+ *
+ * @return a CswArrayValue that can be used as the parameter value for *ArrayKey types
+ */
+CswArrayValue makeArrayValues(void** values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize) {
+    if (arrayValues == NULL)
+        arrayValues = malloc(numArrays * sizeof(CswArrayValue));
+    for(int i = 0; i < numArrays; i++) {
+        arrayValues[i].values = values + i;
+        arrayValues[i].numValues = arraySize;
+    }
+    CswArrayValue result = {.values = arrayValues, .numValues = numArrays};
+    return result;
+}
+
+// TODO: needs work...
+//CswArrayValue makeMatrixValues(void*** values, int numMatrices, int numRows, int numCols) {
+//    CswArrayValue* matrixValues = malloc(numMatrices * sizeof(CswArrayValue));
+//    for(int i = 0; i < numMatrices; i++) {
+//        matrixValues[i] = makeArrayValues(values[i], numRows, numCols);
+//    }
+//    CswArrayValue result = {.values = matrixValues, .numValues = numMatrices};
+//    return result;
+//}
+
 static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(6);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
