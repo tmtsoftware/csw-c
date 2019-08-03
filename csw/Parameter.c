@@ -237,7 +237,7 @@ static cbor_item_t *_makeStructItem(CswParamSet value) {
  *
  * @param numArrays the number of array values
  *
- * @param arrayValues an array of the correct size to hold the values. If null, space will be allocated with malloc,
+ * @param arrayValues an array of size numArrays used to hold the values. If null, space will be allocated with malloc,
  * in which case it should be freed by calling free(result.values)
  *
  * @return a CswArrayValue that can be used as the parameter value for *ArrayKey types
