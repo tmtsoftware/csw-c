@@ -74,7 +74,7 @@ int main() {
     redisLibevAttach(EV_DEFAULT, context.asyncRedis);
 
     // -- publish --
-    const char *key = "test.assembly.myAssemblyEvent";
+    const char *key = "csw.assembly.myAssemblyEvent";
 
     // -- get --
     CswRedisConnectorGetResult getResult = cswRedisConnectorGet(context, key);

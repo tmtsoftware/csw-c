@@ -54,7 +54,7 @@ static void publishInts(CswEventPublisherContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 3};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "test.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublisherPublish(publisher, event);
@@ -110,7 +110,7 @@ static void publishDoubles(CswEventPublisherContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 3};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "test.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublisherPublish(publisher, event);
