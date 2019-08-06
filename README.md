@@ -7,4 +7,17 @@ Events are encoded using [CBOR](https://cbor.io/) and stored in [Redis](https://
 
 See the [examples](./examples) directory for examples of how to publish different kinds of events.
 
+# Building and Installing
+
+## Dependencies
+This project depends on these packages, which can be installed with `yum`, `dnf`, `apt`, 
+depending on the Linux flavor (or `brew`, `port` for Macs). Alternatively, you can
+install them from the source code. The makefiles will look for them in the standard places:
+
+* cmake
+* libev, libev-devel
+* libcbor, libcbor-devel
+* libuuid, libuuid-devel
+* hiredis, hiredis-devel
+
 This is a *Work in progress*.

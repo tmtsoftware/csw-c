@@ -2,12 +2,10 @@
 // Created by abrighto on 8/1/19.
 //
 
-#include "csw/Event.h"
-#include "csw/EventPublisher.h"
-#include "csw/Parameter.h"
+#include "csw/csw.h"
 
 
-static void publishInts(CswEventPublisherContext publisher) {
+static void publishInts(CswEventServiceContext publisher) {
     // -- IntKey parameter contains one or more int values --
     int intValues[] = {42, 43};
     CswArrayValue arrayValues1 = {.values = intValues, .numValues = 2};
@@ -57,13 +55,13 @@ static void publishInts(CswEventPublisherContext publisher) {
     CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
-    cswEventPublisherPublish(publisher, event);
+    cswEventPublish(publisher, event);
 
     // -- Cleanup --
     cswFreeEvent(event);
 }
 
-static void publishDoubles(CswEventPublisherContext publisher) {
+static void publishDoubles(CswEventServiceContext publisher) {
     // -- DoubleKey parameter contains one or more double values --
     double doubleValues[] = {42.1, 43.5};
     CswArrayValue arrayValues1 = {.values = doubleValues, .numValues = 2};
@@ -113,14 +111,14 @@ static void publishDoubles(CswEventPublisherContext publisher) {
     CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
-    cswEventPublisherPublish(publisher, event);
+    cswEventPublish(publisher, event);
 
     // -- Cleanup --
     cswFreeEvent(event);
 }
 
 int main() {
-    CswEventPublisherContext publisher = cswEventPublisherInit();
+    CswEventServiceContext publisher = cswEventPublisherInit();
 
     publishInts(publisher);
     publishDoubles(publisher);

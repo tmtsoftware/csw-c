@@ -2,9 +2,8 @@
 #include <cbor.h>
 #include <uuid/uuid.h>
 
-#include "Event.h"
-#include "EventTime.h"
-#include "Parameter.h"
+#include "csw.h"
+#include "cswImpl.h"
 
 
 // Returns a new uuid string

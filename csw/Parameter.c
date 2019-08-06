@@ -4,8 +4,8 @@
 
 #include <string.h>
 #include <cbor.h>
-#include "Parameter.h"
-#include "Coords.h"
+#include "csw.h"
+#include "cswImpl.h"
 
 /**
  * Constructor for CswParameter.

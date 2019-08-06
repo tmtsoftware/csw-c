@@ -2,52 +2,68 @@
 // Created by abrighto on 7/24/19.
 //
 
-#include "RedisConnector.h"
-
 #include <stdio.h>
 #include <string.h>
 #include <hiredis/hiredis.h>
 #include <hiredis/async.h>
 #include <malloc.h>
 
+#include "csw.h"
+#include "cswImpl.h"
+
+
 // --- Manage communication with Redis ---
 
 /**
- * Opens the connection to Redis.
+ * Opens a synchronous connection to Redis.
  *
  * @return context used for subsequent calls
  */
-CswRedisConnectorContext cswRedisConnectorInit(void) {
-    CswRedisConnectorContext result;
-    result.redis = redisConnect("127.0.0.1", 6379);
-    if (result.redis == NULL || result.redis->err) {
-        if (result.redis) {
-            printf("Redis Error: %s\n", result.redis->errstr);
+redisContext* cswRedisInit(void) {
+    redisContext* result = redisConnect("127.0.0.1", 6379);
+    if (result == NULL || result->err) {
+        if (result) {
+            printf("Redis Error: %s\n", result->errstr);
         } else {
-            printf("Redis Error: Can't allocate context\n");
+            printf("Redis Error: Can't allocate redis context\n");
         }
     }
-
-    result.asyncRedis = redisAsyncConnect("127.0.0.1", 6379);
-    if (result.asyncRedis == NULL || result.asyncRedis->err) {
-        if (result.asyncRedis) {
-            printf("Redis Error: %s\n", result.asyncRedis->errstr);
-        } else {
-            printf("Redis Error: Can't allocate async context\n");
-        }
-    }
-
     return result;
 }
 
 /**
- * Closes and frees the Redis connection.
+ * Opens an asynchronous connection to Redis (for subscribing).
  *
- * @param context the return value from redisConnectorInit
+ * @return context used for subsequent calls
  */
-void cswRedisConnectorClose(CswRedisConnectorContext context) {
-    redisFree(context.redis);
-    redisAsyncFree(context.asyncRedis);
+redisAsyncContext* cswRedisAsyncInit(void) {
+    redisAsyncContext* result = redisAsyncConnect("127.0.0.1", 6379);
+    if (result == NULL || result->err) {
+        if (result) {
+            printf("Redis Error: %s\n", result->errstr);
+        } else {
+            printf("Redis Error: Can't allocate async redis context\n");
+        }
+    }
+    return result;
+}
+
+/**
+ * Closes and frees the Redis publisher connection.
+ *
+ * @param context the return value from cswRedisInit
+ */
+void cswRedisPublisherClose(redisContext* context) {
+    redisFree(context);
+}
+
+/**
+ * Closes and frees the Redis subscriber connection.
+ *
+ * @param context the return value from cswRedisAsyncInit
+ */
+void cswRedisSubscriberClose(redisAsyncContext* context) {
+    redisAsyncFree(context);
 }
 
 // Joins array of strings together with given separator, and save in result,
@@ -94,14 +110,14 @@ static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *pri
 /**
  * Subscribes to changes in the values of the given keys.
  *
- * @param context the return value from redisConnectorInit
+ * @param context the return value from cswRedisAsyncInit
  * @param keyList list of keys to subscribe to
  * @param numKeys number of keys in list
  * @param callback callack function to be notified
  * @param privateData caller data
  * @return an instance of RedisConnectorCallbackData if there were no errors, otherwise NULL.
  */
-CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
+CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(redisAsyncContext* context, const char **keyList, int numKeys,
                                                           CswRedisConnectorCallback callback, void *privateData) {
     int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
     char keys[bufSize];
@@ -110,9 +126,9 @@ CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(CswRedisConnectorConte
     CswRedisConnectorCallbackData *callbackData = malloc(sizeof(CswRedisConnectorCallbackData));
     callbackData->callback = callback;
     callbackData->privateData = privateData;
-    int result = redisAsyncCommand(context.asyncRedis, _subscribeCallback, callbackData, "subscribe %s", keys);
+    int result = redisAsyncCommand(context, _subscribeCallback, callbackData, "subscribe %s", keys);
     if (result != REDIS_OK) {
-        printf("Redis SUBSCRIBE Error: %s\n", context.asyncRedis->errstr);
+        printf("Redis SUBSCRIBE Error: %s\n", context->errstr);
         free(callbackData);
         return NULL;
     } else {
@@ -120,55 +136,60 @@ CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(CswRedisConnectorConte
     }
 }
 
+static void _unsubscribeCallback(redisAsyncContext* context, void *r, void *privateData) {
+    redisReply *reply = r;
+    if (reply == NULL) {
+        printf("Redis UNSUBSCRIBE Error: %s\n", context->errstr);
+        return;
+    }
+}
+
 /**
  * Unsubscribes to changes in the values of the given keys.
  *
- * @param context the return value from redisConnectorInit
+ * @param context the return value from cswRedisAsyncInit
  * @param keyList list of keys to subscribe to
  * @param numKeys number of keys in list
  * @param callbackData the value returned from the redisConnectorSubscribe() call (needs to be freed, may be NULL if already freed)
  * @return 0 if there were no errors
  */
-int redisConnectorUnsubscribe(CswRedisConnectorContext context, const char **keyList, int numKeys,
+int redisConnectorUnsubscribe(redisAsyncContext* context, const char **keyList, int numKeys,
                               CswRedisConnectorCallbackData *callbackData) {
     int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
     char keys[bufSize];
     keys[0] = '\0';
     _join(keyList, numKeys, " ", keys);
-    redisReply *reply = redisCommand(context.redis, "unsubscribe %s", keys);
-    int status = 0;
-    if (reply == NULL) {
-        printf("Redis UNSUBSCRIBE Error: %s\n", context.redis->errstr);
-        status++;
-    }
-    if (callbackData)
-        free(callbackData);
 
-    return status;
+    //int redisAsyncCommand(redisAsyncContext *ac, redisCallbackFn *fn, void *privdata, const char *format, ...);
+    int result = redisAsyncCommand(context, _unsubscribeCallback, NULL, "unsubscribe %s", keys);
+    if (result != REDIS_OK) {
+        printf("Redis UNSUBSCRIBE Error: %s\n", context->errstr);
+    }
+    return result;
 }
 
 /**
  * Sets and publishes the given key with the given encoded value and returns 0 if there were no errors
  *
- * @param context the return value from redisConnectorInit
+ * @param context the return value from cswRedisInit
  * @param key the key to publish
  * @param encodedValue the encoded value for the key
  * @param length the length in bytes of the encoded value
  * @return 0 if there were no errors
  */
-int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, const unsigned char *encodedValue, size_t length) {
+int cswRedisConnectorPublish(redisContext* context, const char *key, const unsigned char *encodedValue, size_t length) {
     //reply = redisCommand(context, "SET foo %b", value, (size_t) valuelen);
-    redisReply *reply1 = redisCommand(context.redis, "set %s %b", key, encodedValue, length);
-    redisReply *reply2 = redisCommand(context.redis, "publish %s %b", key, encodedValue, length);
+    redisReply *reply1 = redisCommand(context, "set %s %b", key, encodedValue, length);
+    redisReply *reply2 = redisCommand(context, "publish %s %b", key, encodedValue, length);
     int status = 0;
     if (reply1 == NULL) {
-        printf("Redis SET Error: %s\n", context.redis->errstr);
+        printf("Redis SET Error: %s\n", context->errstr);
         status++;
     } else {
         freeReplyObject(reply1);
     }
     if (reply2 == NULL) {
-        printf("Redis PUBLISH Error: %s\n", context.redis->errstr);
+        printf("Redis PUBLISH Error: %s\n", context->errstr);
         status++;
     } else {
         freeReplyObject(reply2);
@@ -179,15 +200,15 @@ int cswRedisConnectorPublish(CswRedisConnectorContext context, const char *key, 
 /**
  * Gets the value for the given key
  *
- * @param context the return value from redisConnectorInit
+ * @param context the return value from cswRedisInit
  * @param key the key to get
  * @return a struct containing the (encoded) value for the key and the length of the value in bytes
  */
-CswRedisConnectorGetResult cswRedisConnectorGet(CswRedisConnectorContext context, const char *key) {
-    redisReply *reply = redisCommand(context.redis, "GET %s", key);
+CswRedisConnectorGetResult cswRedisConnectorGet(redisContext* context, const char *key) {
+    redisReply *reply = redisCommand(context, "GET %s", key);
     if (reply == NULL) {
-        printf("Redis Error: %s\n", context.redis->errstr);
-        CswRedisConnectorGetResult result = {.errorMsg = context.redis->errstr};
+        printf("Redis Error: %s\n", context->errstr);
+        CswRedisConnectorGetResult result = {.errorMsg = context->errstr};
         return result;
     } else {
         unsigned char *data = (unsigned char*)strdup(reply->str);

@@ -2,13 +2,12 @@
 // Created by abrighto on 7/24/19.
 //
 
-#include "csw/Event.h"
-#include <csw/RedisConnector.h>
 #include <assert.h>
 #include <string.h>
-
 #include <stdio.h>
 #include <hiredis/adapters/libev.h>
+
+#include "csw/cswImpl.h"
 
 // XXX TODO: Event Subscribe API is not implemented yet. This is using Redis directly.
 // XXX TODO: Still need to add support for decoding CBOR to Event.
@@ -68,21 +67,23 @@ static void callback(const char *key, const unsigned char *value, size_t len, vo
 // XXX TODO: TEMP: until event subscriber code is implemented
 
 int main() {
-    CswRedisConnectorContext context = cswRedisConnectorInit();
-    assert(context.redis != NULL && context.asyncRedis != NULL);
+    redisContext* redis = cswRedisInit();
+    assert(redis != NULL);
+    redisAsyncContext* asyncRedis = cswRedisAsyncInit();
+    assert(asyncRedis != NULL);
 
-    redisLibevAttach(EV_DEFAULT, context.asyncRedis);
+    redisLibevAttach(EV_DEFAULT, asyncRedis);
 
     // -- publish --
     const char *key = "csw.assembly.myAssemblyEvent";
 
     // -- get --
-    CswRedisConnectorGetResult getResult = cswRedisConnectorGet(context, key);
+    CswRedisConnectorGetResult getResult = cswRedisConnectorGet(redis, key);
     callback(key, getResult.data, getResult.length, NULL);
 
     // -- subscribe --
     const char *keyList[1] = {key};
-    CswRedisConnectorCallbackData* callbackData = cswRedisConnectorSubscribe(context, keyList, 1, callback, NULL);
+    CswRedisConnectorCallbackData* callbackData = cswRedisConnectorSubscribe(asyncRedis, keyList, 1, callback, NULL);
     assert(callbackData != NULL);
 
     ev_loop(EV_DEFAULT_ 0);

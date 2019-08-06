@@ -5,7 +5,8 @@
 #include <string.h>
 #include <cbor.h>
 #include <time.h>
-#include "EventTime.h"
+#include "csw.h"
+#include "cswImpl.h"
 
 /**
  * Returns an instance containing the current time
