@@ -1,7 +1,7 @@
 
 set(sources Event.c RedisConnector.c Parameter.c EventTime.c EventPublisher.c)
 
-add_library(csw STATIC ${sources})
+add_library(csw STATIC ${sources} Coords.c)
 add_library(csw-shared SHARED ${sources})
 
 find_package(hiredis REQUIRED)

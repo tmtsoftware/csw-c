@@ -199,10 +199,24 @@ static struct cbor_pair _makeIntPair(const char *key, int value) {
     };
 }
 
+static struct cbor_pair _makeLongPair(const char *key, long value) {
+    return (struct cbor_pair) {
+            .key = _makeStringItem(key),
+            .value = _makeLongItem(value)
+    };
+}
+
 static struct cbor_pair _makeFloatPair(const char *key, float value) {
     return (struct cbor_pair) {
             .key = _makeStringItem(key),
             .value = _makeFloatItem(value)
+    };
+}
+
+static struct cbor_pair _makeDoublePair(const char *key, double value) {
+    return (struct cbor_pair) {
+            .key = _makeStringItem(key),
+            .value = _makeDoubleItem(value)
     };
 }
 
@@ -264,19 +278,20 @@ CswArrayValue makeArrayValues(void** values, int numArrays, CswArrayValue arrayV
 //}
 
 static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
-    cbor_item_t *valueMap = cbor_new_definite_map(6);
+    cbor_item_t *valueMap = cbor_new_definite_map(7);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
-    cbor_map_add(valueMap, _makeIntPair("dec", value.dec.uas));
+    cbor_map_add(valueMap, _makeLongPair("ra", value.ra.uas));
+    cbor_map_add(valueMap, _makeLongPair("dec", value.dec.uas));
     cbor_map_add(valueMap, _cswMakeStringPair("frame", _eqFrameName(value.frame)));
     cbor_map_add(valueMap, _cswMakeStringPair("catalogName", value.catalogName));
 
     cbor_item_t *pmMap = cbor_new_definite_map(2);
-    cbor_map_add(pmMap, _makeFloatPair("pmx", value.pm.pmx));
-    cbor_map_add(pmMap, _makeFloatPair("pmy", value.pm.pmy));
+    cbor_map_add(pmMap, _makeDoublePair("pmx", value.pm.pmx));
+    cbor_map_add(pmMap, _makeDoublePair("pmy", value.pm.pmy));
     cbor_map_add(valueMap, _cswMakeItemPair("pm", pmMap));
 
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("CswEqCoord", valueMap));
+    cbor_map_add(map, _cswMakeItemPair("EqCoord", valueMap));
     return map;
 }
 
@@ -286,7 +301,7 @@ static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
     cbor_map_add(valueMap, _cswMakeStringPair("frame", _solarSystemObjectName(value.body)));
 
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("CswSolarSystemCoord", valueMap));
+    cbor_map_add(map, _cswMakeItemPair("SolarSystemCoord", valueMap));
     return map;
 }
 
@@ -294,15 +309,15 @@ static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(8);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeFloatPair("epoch", value.epoch));
-    cbor_map_add(valueMap, _makeIntPair("inclination", value.inclination.uas));
-    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value.longAscendingNode.uas));
-    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value.argOfPerihelion.uas));
+    cbor_map_add(valueMap, _makeLongPair("inclination", value.inclination.uas));
+    cbor_map_add(valueMap, _makeLongPair("longAscendingNode", value.longAscendingNode.uas));
+    cbor_map_add(valueMap, _makeLongPair("argOfPerihelion", value.argOfPerihelion.uas));
     cbor_map_add(valueMap, _makeFloatPair("meanDistance", value.meanDistance));
     cbor_map_add(valueMap, _makeFloatPair("eccentricity", value.eccentricity));
-    cbor_map_add(valueMap, _makeIntPair("meanAnomaly", value.meanAnomaly.uas));
+    cbor_map_add(valueMap, _makeLongPair("meanAnomaly", value.meanAnomaly.uas));
 
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("CswMinorPlanetCoord", valueMap));
+    cbor_map_add(map, _cswMakeItemPair("MinorPlanetCoord", valueMap));
     return map;
 }
 
@@ -310,25 +325,25 @@ static cbor_item_t *_makeCometCoordItem( CswCometCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(7);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeFloatPair("epochOfPerihelion", value.epochOfPerihelion));
-    cbor_map_add(valueMap, _makeIntPair("inclination", value.inclination.uas));
-    cbor_map_add(valueMap, _makeIntPair("longAscendingNode", value.longAscendingNode.uas));
-    cbor_map_add(valueMap, _makeIntPair("argOfPerihelion", value.argOfPerihelion.uas));
+    cbor_map_add(valueMap, _makeLongPair("inclination", value.inclination.uas));
+    cbor_map_add(valueMap, _makeLongPair("longAscendingNode", value.longAscendingNode.uas));
+    cbor_map_add(valueMap, _makeLongPair("argOfPerihelion", value.argOfPerihelion.uas));
     cbor_map_add(valueMap, _makeFloatPair("perihelionDistance", value.perihelionDistance));
     cbor_map_add(valueMap, _makeFloatPair("eccentricity", value.eccentricity));
 
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("CswCometCoord", valueMap));
+    cbor_map_add(map, _cswMakeItemPair("CometCoord", valueMap));
     return map;
 }
 
 static cbor_item_t *_makeAltAzCoordItem(CswAltAzCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(3);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
-    cbor_map_add(valueMap, _makeIntPair("alt", value.alt.uas));
-    cbor_map_add(valueMap, _makeIntPair("az", value.az.uas));
+    cbor_map_add(valueMap, _makeLongPair("alt", value.alt.uas));
+    cbor_map_add(valueMap, _makeLongPair("az", value.az.uas));
 
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("CswAltAzCoord", valueMap));
+    cbor_map_add(map, _cswMakeItemPair("AltAzCoord", valueMap));
     return map;
 }
 
