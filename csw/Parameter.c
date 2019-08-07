@@ -453,7 +453,7 @@ cbor_item_t *_cswParameterAsMap(CswParameter param) {
 }
 
 
-// ---- From CBOR ---
+// ---- From CBOR (TODO: In progress, not yet implemented...) ---
 
 // Since the string values returned from CBOR are not null-terminated, we need to allocate
 // a null-terminated copy. Note that the return value needs to be freed at some point.
@@ -476,6 +476,7 @@ CswParameter _cswParameterFromMap(cbor_item_t *map) {
 
 // Makes an array of CswParameters from the given CBOR Item.
 // The return type is a CswStruct, since it contains an array or params as well as the length of the array.
+// Note: Memory for sparamSet.params needs to be freed eventually.
 CswParamSet _cswGetParamSet(cbor_item_t* item) {
     CswParamSet paramSet = {};
     paramSet.numParams = cbor_array_size(item);

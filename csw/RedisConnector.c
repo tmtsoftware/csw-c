@@ -115,7 +115,8 @@ static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *pri
  * @param numKeys number of keys in list
  * @param callback callack function to be notified
  * @param privateData caller data
- * @return an instance of RedisConnectorCallbackData if there were no errors, otherwise NULL.
+ * @return an instance of RedisConnectorCallbackData if there were no errors, otherwise NULL
+ * (return value needs to be freed with free() when done).
  */
 CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(redisAsyncContext* context, const char **keyList, int numKeys,
                                                           CswRedisConnectorCallback callback, void *privateData) {

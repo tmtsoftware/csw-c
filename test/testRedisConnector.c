@@ -36,5 +36,7 @@ int main() {
     assert(callbackData != NULL);
 
     ev_loop(EV_DEFAULT_ 0);
+
+    free(callbackData);
     return 0;
 }
