@@ -58,11 +58,6 @@ static const char *_keyTypeNames[] = {
 
 static const size_t numKeyTypes = sizeof(_keyTypeNames) / sizeof(char *);
 
-// Gets the name for the given key
-static const char *_keyTypeName(CswKeyType keyType) {
-    return _keyTypeNames[keyType];
-}
-
 // Gets the enum value for the given key type
 static CswKeyType _keyTypeValue(const char *keyTypeName) {
     for (int i = 0; i < numKeyTypes; i++) {
@@ -82,11 +77,6 @@ static const char *_eqFrameNames[] = {
 
 static const size_t numEqFrames = sizeof(_eqFrameNames) / sizeof(char *);
 
-// Gets the name for the given EqFrame enum value
-static const char *_eqFrameName(CswEqFrame eqFrame) {
-    return _eqFrameNames[eqFrame];
-}
-
 // Gets the enum value for the given EQFrame name
 static CswEqFrame _eqFrameValue(const char *eqFrameName) {
     for (int i = 0; i < numEqFrames; i++) {
@@ -99,6 +89,7 @@ static CswEqFrame _eqFrameValue(const char *eqFrameName) {
 
 // --- Solar System Object ---
 
+// Must correspond to CswSolarSystemObject enum type
 static const char *_solarSystemObjectNames[] = {
         "Mercury",
         "Venus",
@@ -112,11 +103,6 @@ static const char *_solarSystemObjectNames[] = {
 };
 
 static const size_t numSolarSystemObjects = sizeof(_solarSystemObjectNames) / sizeof(char *);
-
-// Gets the name for the given CswSolarSystemObject enum value
-static const char *_solarSystemObjectName(CswSolarSystemObject solarSystemObject) {
-    return _solarSystemObjectNames[solarSystemObject];
-}
 
 // Gets the enum value for the given EQFrame name
 static CswSolarSystemObject _solarSystemObjectValue(const char *solarSystemObjectName) {
@@ -282,7 +268,7 @@ static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeLongPair("ra", value.ra.uas));
     cbor_map_add(valueMap, _makeLongPair("dec", value.dec.uas));
-    cbor_map_add(valueMap, _cswMakeStringPair("frame", _eqFrameName(value.frame)));
+    cbor_map_add(valueMap, _cswMakeStringPair("frame", _eqFrameNames[value.frame]));
     cbor_map_add(valueMap, _cswMakeStringPair("catalogName", value.catalogName));
 
     cbor_item_t *pmMap = cbor_new_definite_map(2);
@@ -298,7 +284,7 @@ static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
 static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(2);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
-    cbor_map_add(valueMap, _cswMakeStringPair("frame", _solarSystemObjectName(value.body)));
+    cbor_map_add(valueMap, _cswMakeStringPair("body", _solarSystemObjectNames[value.body]));
 
     cbor_item_t *map = cbor_new_definite_map(1);
     cbor_map_add(map, _cswMakeItemPair("SolarSystemCoord", valueMap));
@@ -308,12 +294,12 @@ static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
 static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(8);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
-    cbor_map_add(valueMap, _makeFloatPair("epoch", value.epoch));
+    cbor_map_add(valueMap, _makeDoublePair("epoch", value.epoch));
     cbor_map_add(valueMap, _makeLongPair("inclination", value.inclination.uas));
     cbor_map_add(valueMap, _makeLongPair("longAscendingNode", value.longAscendingNode.uas));
     cbor_map_add(valueMap, _makeLongPair("argOfPerihelion", value.argOfPerihelion.uas));
-    cbor_map_add(valueMap, _makeFloatPair("meanDistance", value.meanDistance));
-    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value.eccentricity));
+    cbor_map_add(valueMap, _makeDoublePair("meanDistance", value.meanDistance));
+    cbor_map_add(valueMap, _makeDoublePair("eccentricity", value.eccentricity));
     cbor_map_add(valueMap, _makeLongPair("meanAnomaly", value.meanAnomaly.uas));
 
     cbor_item_t *map = cbor_new_definite_map(1);
@@ -324,12 +310,12 @@ static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
 static cbor_item_t *_makeCometCoordItem( CswCometCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(7);
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
-    cbor_map_add(valueMap, _makeFloatPair("epochOfPerihelion", value.epochOfPerihelion));
+    cbor_map_add(valueMap, _makeDoublePair("epochOfPerihelion", value.epochOfPerihelion));
     cbor_map_add(valueMap, _makeLongPair("inclination", value.inclination.uas));
     cbor_map_add(valueMap, _makeLongPair("longAscendingNode", value.longAscendingNode.uas));
     cbor_map_add(valueMap, _makeLongPair("argOfPerihelion", value.argOfPerihelion.uas));
-    cbor_map_add(valueMap, _makeFloatPair("perihelionDistance", value.perihelionDistance));
-    cbor_map_add(valueMap, _makeFloatPair("eccentricity", value.eccentricity));
+    cbor_map_add(valueMap, _makeDoublePair("perihelionDistance", value.perihelionDistance));
+    cbor_map_add(valueMap, _makeDoublePair("eccentricity", value.eccentricity));
 
     cbor_item_t *map = cbor_new_definite_map(1);
     cbor_map_add(map, _cswMakeItemPair("CometCoord", valueMap));
@@ -462,7 +448,7 @@ static cbor_item_t *_paramAsMap(CswParameter param) {
 // Returns a CBOR map for the given Parameter argument
 cbor_item_t *_cswParameterAsMap(CswParameter param) {
     cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair(_keyTypeName(param.keyType), _paramAsMap(param)));
+    cbor_map_add(map, _cswMakeItemPair(_keyTypeNames[param.keyType], _paramAsMap(param)));
     return map;
 }
 

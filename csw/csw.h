@@ -118,12 +118,12 @@ typedef struct {
 typedef struct {
     CswCoordKeyType keyType;
     CswTag tag;
-    float epoch;
+    double epoch;
     CswAngle inclination;
     CswAngle longAscendingNode;
     CswAngle argOfPerihelion;
-    float meanDistance;  // AU
-    float eccentricity;
+    double meanDistance;  // AU
+    double eccentricity;
     CswAngle meanAnomaly;
 } CswMinorPlanetCoord;
 
@@ -131,12 +131,12 @@ typedef struct {
 typedef struct {
     CswCoordKeyType keyType;
     CswTag tag;
-    float epochOfPerihelion;
+    double epochOfPerihelion;
     CswAngle inclination;
     CswAngle longAscendingNode;
     CswAngle argOfPerihelion;
-    float perihelionDistance;  // AU
-    float eccentricity;
+    double perihelionDistance;  // AU
+    double eccentricity;
 } CswCometCoord;
 
 // Represents Alt-Az Coordinates (mirrors class of same name in the CSW Scala code).
@@ -163,9 +163,9 @@ typedef struct CswArrayValue {
     // An array of primitive values, or an array of CSwArrayValue for array and matrix types or the csw "struct" type.
     union {
         void *values;
-        int* intValues;
+        int *intValues;
         struct CswArrayValue *arrayValues;
-        CswCoord* coordValues;
+        CswCoord *coordValues;
     };
 
     // The number of values in the above array
@@ -221,13 +221,13 @@ typedef struct {
     CswEventType eventType;
 
     // prefix representing source of the event
-    const char* source;
+    const char *source;
 
     // the name of event
-    const char* eventName;
+    const char *eventName;
 
     // list of CswParameter (keys with values)
-    CswParameter* paramSet;
+    CswParameter *paramSet;
 
     // Number of parameters in the paramSet (not encoded)
     int numParams;
@@ -236,14 +236,14 @@ typedef struct {
     CswEventTime eventTime;
 
     // event id (optional: Should leave empty unless received from event service)
-    char* eventId;
+    char *eventId;
 } CswEvent;
 
 // Public type of context for event service (publishing)
-typedef void* CswEventServiceContext;
+typedef void *CswEventServiceContext;
 
 // Public type of context for event subscribing
-typedef void* CswEventSubscriberContext;
+typedef void *CswEventSubscriberContext;
 
 
 // --- Public API ---
@@ -251,7 +251,7 @@ typedef void* CswEventSubscriberContext;
 // --- Events ---
 
 // Event constructor
-CswEvent cswMakeEvent(CswEventType eventType, const char* source, const char* eventName, CswParamSet paramSet);
+CswEvent cswMakeEvent(CswEventType eventType, const char *source, const char *eventName, CswParamSet paramSet);
 
 // Free any allocated memory for the event
 void cswFreeEvent(CswEvent event);
@@ -284,7 +284,7 @@ int cswEventPublish(CswEventServiceContext context, CswEvent event);
 
 // --- Parameters ---
 
-CswArrayValue makeArrayValues(void** values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize);
+CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize);
 //CswArrayValue makeMatrixValues(void*** values, int numMatrices, int numRows, int numCols);
 
 CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units);
@@ -295,7 +295,20 @@ void cswFreeParameter(CswParameter param);
 
 // --- Coordinates ---
 
-CswEqCoord cswMakeEqCoord(const char* tag, long raInUas, long decInUas, CswEqFrame frame, const char *catalogName, double pmx, double pmy);
+CswEqCoord cswMakeEqCoord(const char *tag, long raInUas, long decInUas, CswEqFrame frame, const char *catalogName,
+                          double pmx, double pmy);
 
+CswSolarSystemCoord cswMakeSolarSystemCoord(const char *tag, CswSolarSystemObject body);
+
+CswMinorPlanetCoord cswMakeMinorPlanetCoord(const char *tag, double epoch, long inclinationInUas,
+                                            long longAscendingNodeInUas, long argOfPerihelionInUas, double meanDistance,
+                                            double eccentricity,
+                                            long meanAnomalyInUas);
+
+CswCometCoord cswMakeCometCoord(const char *tag, double epochOfPerihelion, long inclinationInUas,
+                                long longAscendingNodeInUas, long argOfPerihelionInUas, double perihelionDistance,
+                                double eccentricity);
+
+CswAltAzCoord cswMakeAltAzCoord(const char *tag, long altInUas, long azInUas);
 
 #endif //CSW_C_CSW_H
