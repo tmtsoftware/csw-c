@@ -6,7 +6,6 @@
 #include <string.h>
 #include <hiredis/hiredis.h>
 #include <hiredis/async.h>
-#include <malloc.h>
 
 #include "csw.h"
 #include "cswImpl.h"
