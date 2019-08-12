@@ -7,7 +7,32 @@ Events are encoded using [CBOR](https://cbor.io/) and stored in [Redis](https://
 
 See the [examples](./examples) directory for examples of how to publish different kinds of events.
 
-# Building and Installing
+
+## Dependencies
+This project depends on these packages, which can be installed with `yum`, `dnf`, `apt`, 
+depending on the Linux flavor (or `brew`, `port` for Macs). Alternatively, you can
+install them from the source code. The makefiles will look for them in the standard places:
+
+* cmake
+* libev, libev-devel
+* libcbor, libcbor-devel
+* libuuid, libuuid-devel
+* hiredis, hiredis-devel
+
+
+* Note: For CentOS you need to install cmake-3.14 and libcbor manually.
+
+* Note: For MacOS, you can install the dependencies as follows:
+```
+    brew tap pjk/libcbor
+    brew install libcbor
+    brew install libev
+    brew install hiredis
+    brew install ossp-uuid
+```
+
+## Building and Installing
+
 
 To build the the library (libcsw) and the example applications, run:
 
@@ -32,14 +57,10 @@ which removes the local build directory and:
 
 which removes the installed files.
 
-## Dependencies
-This project depends on these packages, which can be installed with `yum`, `dnf`, `apt`, 
-depending on the Linux flavor (or `brew`, `port` for Macs). Alternatively, you can
-install them from the source code. The makefiles will look for them in the standard places:
 
-* cmake
-* libev, libev-devel
-* libcbor, libcbor-devel
-* libuuid, libuuid-devel
-* hiredis, hiredis-devel
+## Running the Examples
+
+Once compiled, you can run the applications under the examples directory, 
+but first run `test-assembly-client` from the [csw-prod-qa](https://github.com/tmtsoftware/csw-prod-qa) 
+project. It will subscribe to the events that the examples publish and print them out.
 
