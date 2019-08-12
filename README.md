@@ -9,6 +9,29 @@ See the [examples](./examples) directory for examples of how to publish differen
 
 # Building and Installing
 
+To build the the library (libcsw) and the example applications, run:
+
+    make
+
+And optionally:
+
+    sudo make install
+
+The sudo is needed, since by default the install directory is /usr/local on Linux.
+You can change the target install directory like this:
+
+    make install INSTALL_DIR=$HOME/myDir
+
+Other make targets include:
+
+    make clean
+
+which removes the local build directory and:
+
+    make uninstall
+
+which removes the installed files.
+
 ## Dependencies
 This project depends on these packages, which can be installed with `yum`, `dnf`, `apt`, 
 depending on the Linux flavor (or `brew`, `port` for Macs). Alternatively, you can
@@ -20,4 +43,3 @@ install them from the source code. The makefiles will look for them in the stand
 * libuuid, libuuid-devel
 * hiredis, hiredis-devel
 
-This is a *Work in progress*.
