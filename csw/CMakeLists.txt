@@ -5,9 +5,11 @@ add_library(csw STATIC ${sources} Coords.c)
 #add_library(csw-shared SHARED ${sources})
 
 find_package(hiredis REQUIRED)
-find_package(ev REQUIRED)
+#find_package(ev REQUIRED)
 find_package(cbor REQUIRED)
-include_directories( ${HIREDIS_INCLUDE_DIRS}  ${EV_INCLUDE_DIRS}  ${CBOR_INCLUDE_DIRS} )
+
+#include_directories( ${HIREDIS_INCLUDE_DIRS}  ${EV_INCLUDE_DIRS}  ${CBOR_INCLUDE_DIRS} )
+include_directories( ${HIREDIS_INCLUDE_DIRS}  ${CBOR_INCLUDE_DIRS} )
 
 set_target_properties(csw PROPERTIES
         PUBLIC_HEADER csw.h
@@ -23,4 +25,9 @@ include(GNUInstallDirs)
 #        PUBLIC_HEADER
 #        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/csw
 #        )
+
+install(TARGETS csw
+        PUBLIC_HEADER
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/csw
+        )
 

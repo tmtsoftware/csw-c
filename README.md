@@ -14,7 +14,7 @@ depending on the Linux flavor (or `brew`, `port` for Macs). Alternatively, you c
 install them from the source code. The makefiles will look for them in the standard places:
 
 * cmake
-* libev, libev-devel
+* libev, libev-devel  (Not currently needed: Will be needed if event subscription is implemented)
 * libcbor, libcbor-devel
 * libuuid, libuuid-devel
 * hiredis, hiredis-devel
@@ -26,7 +26,7 @@ install them from the source code. The makefiles will look for them in the stand
 ```
     brew tap pjk/libcbor
     brew install libcbor
-    brew install libev
+    brew install libev   (Not currently needed: Will be needed if event subscription is implemented)
     brew install hiredis
     brew install ossp-uuid
 ```
