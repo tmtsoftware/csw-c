@@ -4,6 +4,8 @@
 
 #include "csw/csw.h"
 
+// Tests publishing coordinate values
+
 static void publishAltAzCoord(CswEventServiceContext publisher) {
     CswAltAzCoord altAzCoord1 = cswMakeAltAzCoord("BASE", 1083600000000, 153000000000);
     CswCoord values[1];

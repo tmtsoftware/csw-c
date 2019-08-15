@@ -4,6 +4,7 @@
 
 #include "csw/csw.h"
 
+// Tests publishing array and matrix values
 
 static void publishInts(CswEventServiceContext publisher) {
     // -- IntKey parameter contains one or more int values --

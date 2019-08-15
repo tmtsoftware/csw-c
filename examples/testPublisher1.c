@@ -5,6 +5,7 @@
 
 #include "csw/csw.h"
 
+// Tests publishing a simple event with multiple values
 int main() {
     CswEventServiceContext publisher = cswEventPublisherInit();
 
