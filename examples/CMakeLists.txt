@@ -9,6 +9,7 @@ include_directories( .. )
 add_executable(testPublisher1 testPublisher1.c)
 add_executable(testPublisher2 testPublisher2.c)
 add_executable(testPublisher3 testPublisher3.c)
+add_executable(testPublisher4 testPublisher4.c)
 
 #set(libs ${HIREDIS_LIBS} ${EV_LIBS} ${UUID_LIBRARY} ${CBOR_LIBS})
 set(libs ${HIREDIS_LIBS} ${UUID_LIBRARY} ${CBOR_LIBS})
@@ -17,6 +18,7 @@ set(libs ${HIREDIS_LIBS} ${UUID_LIBRARY} ${CBOR_LIBS})
 target_link_libraries( testPublisher1 csw ${libs})
 target_link_libraries( testPublisher2 csw ${libs})
 target_link_libraries( testPublisher3 csw ${libs})
+target_link_libraries( testPublisher4 csw ${libs})
 
 #${JSON-C_LIBRARIES}
 

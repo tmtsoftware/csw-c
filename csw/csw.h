@@ -189,7 +189,7 @@ typedef struct {
 } CswParameter;
 
 
-// A parameter set (also the value when key is "StructKey").
+// A parameter set (also the type of each values when key is "StructKey").
 typedef struct {
     // a list of Parameters
     CswParameter *params;
