@@ -44,39 +44,41 @@ void cswFreeEvent(CswEvent event) {
 
 // Returns a CBOR map for the given Event argument
 cbor_item_t *cswEventAsMap(CswEvent event) {
-    cbor_item_t *valueMap = cbor_new_definite_map(5);
+    cbor_item_t *valueMap = cbor_new_definite_map(6);
+
+    char* eventType = "SystemEvent";
+    if (event.eventType == ObserveEvent)
+        eventType = "ObserveEvent";
+
+    cbor_map_add(valueMap, _cswMakeStringPair("_type", eventType));
     cbor_map_add(valueMap, _cswMakeStringPair("source", event.source));
     cbor_map_add(valueMap, _cswMakeStringPair("eventName", event.eventName));
     cbor_map_add(valueMap, _cswMakeParamSetItemPair(event.paramSet, event.numParams));
     cbor_map_add(valueMap, _cswMakeItemPair("eventTime", _cswEventTimeAsMap(event.eventTime)));
     cbor_map_add(valueMap, _cswMakeStringPair("eventId", event.eventId));
 
-    cbor_item_t *map = cbor_new_definite_map(1);
-    char* eventType = "SystemEvent";
-    if (event.eventType == ObserveEvent)
-        eventType = "ObserveEvent";
-    cbor_map_add(map, _cswMakeItemPair(eventType, valueMap));
-    return map;
+    return valueMap;
 }
 
 
-// Returns an Event for the given CBOR map
-CswEvent _cswEventFromMap(cbor_item_t* map) {
-    CswEvent event = {};
-    for (size_t i = 0; i < cbor_map_size(map); i++) {
-        struct cbor_pair pair = cbor_map_handle(map)[i];
-        /* Note: no null at end of string */
-        char* key = (char*)cbor_string_handle(pair.key);
-        int keyLen = cbor_string_length(pair.key);
-        if (strncmp(key, "source", keyLen) == 0) {
-            event.source = _cswGetString(pair.value);
-        } else if (strncmp(key, "eventName", keyLen) == 0) {
-            event.eventName = _cswGetString(pair.value);
-        } else if (strncmp(key, "paramSet", keyLen) == 0) {
-            // XXX FIXME: TODO: complete this code...
-//            event.paramSet = _cswMakeParamSet(pair.value);
-        }
-    }
-    return event;
-}
+// XXX FIXME TODO: Update to use flat encoding...
+//// Returns an Event for the given CBOR map
+//CswEvent _cswEventFromMap(cbor_item_t* map) {
+//    CswEvent event = {};
+//    for (size_t i = 0; i < cbor_map_size(map); i++) {
+//        struct cbor_pair pair = cbor_map_handle(map)[i];
+//        /* Note: no null at end of string */
+//        char* key = (char*)cbor_string_handle(pair.key);
+//        int keyLen = cbor_string_length(pair.key);
+//        if (strncmp(key, "source", keyLen) == 0) {
+//            event.source = _cswGetString(pair.value);
+//        } else if (strncmp(key, "eventName", keyLen) == 0) {
+//            event.eventName = _cswGetString(pair.value);
+//        } else if (strncmp(key, "paramSet", keyLen) == 0) {
+//            // XXX FIXME: TODO: complete this code...
+////            event.paramSet = _cswMakeParamSet(pair.value);
+//        }
+//    }
+//    return event;
+//}
 

@@ -264,7 +264,8 @@ CswArrayValue makeArrayValues(void** values, int numArrays, CswArrayValue arrayV
 //}
 
 static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
-    cbor_item_t *valueMap = cbor_new_definite_map(7);
+    cbor_item_t *valueMap = cbor_new_definite_map(8);
+    cbor_map_add(valueMap, _cswMakeStringPair("_type", "EqCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeLongPair("ra", value.ra.uas));
     cbor_map_add(valueMap, _makeLongPair("dec", value.dec.uas));
@@ -276,23 +277,21 @@ static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
     cbor_map_add(pmMap, _makeDoublePair("pmy", value.pm.pmy));
     cbor_map_add(valueMap, _cswMakeItemPair("pm", pmMap));
 
-    cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("EqCoord", valueMap));
-    return map;
+    return valueMap;
 }
 
 static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
-    cbor_item_t *valueMap = cbor_new_definite_map(2);
+    cbor_item_t *valueMap = cbor_new_definite_map(3);
+    cbor_map_add(valueMap, _cswMakeStringPair("_type", "SolarSystemCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _cswMakeStringPair("body", _solarSystemObjectNames[value.body]));
 
-    cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("SolarSystemCoord", valueMap));
-    return map;
+    return valueMap;
 }
 
 static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
-    cbor_item_t *valueMap = cbor_new_definite_map(8);
+    cbor_item_t *valueMap = cbor_new_definite_map(9);
+    cbor_map_add(valueMap, _cswMakeStringPair("_type", "MinorPlanetCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeDoublePair("epoch", value.epoch));
     cbor_map_add(valueMap, _makeLongPair("inclination", value.inclination.uas));
@@ -302,13 +301,12 @@ static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
     cbor_map_add(valueMap, _makeDoublePair("eccentricity", value.eccentricity));
     cbor_map_add(valueMap, _makeLongPair("meanAnomaly", value.meanAnomaly.uas));
 
-    cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("MinorPlanetCoord", valueMap));
-    return map;
+    return valueMap;
 }
 
 static cbor_item_t *_makeCometCoordItem( CswCometCoord value) {
-    cbor_item_t *valueMap = cbor_new_definite_map(7);
+    cbor_item_t *valueMap = cbor_new_definite_map(8);
+    cbor_map_add(valueMap, _cswMakeStringPair("_type", "CometCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeDoublePair("epochOfPerihelion", value.epochOfPerihelion));
     cbor_map_add(valueMap, _makeLongPair("inclination", value.inclination.uas));
@@ -317,20 +315,17 @@ static cbor_item_t *_makeCometCoordItem( CswCometCoord value) {
     cbor_map_add(valueMap, _makeDoublePair("perihelionDistance", value.perihelionDistance));
     cbor_map_add(valueMap, _makeDoublePair("eccentricity", value.eccentricity));
 
-    cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("CometCoord", valueMap));
-    return map;
+    return valueMap;
 }
 
 static cbor_item_t *_makeAltAzCoordItem(CswAltAzCoord value) {
-    cbor_item_t *valueMap = cbor_new_definite_map(3);
+    cbor_item_t *valueMap = cbor_new_definite_map(4);
+    cbor_map_add(valueMap, _cswMakeStringPair("_type", "AltAzCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
     cbor_map_add(valueMap, _makeLongPair("alt", value.alt.uas));
     cbor_map_add(valueMap, _makeLongPair("az", value.az.uas));
 
-    cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeItemPair("AltAzCoord", valueMap));
-    return map;
+    return valueMap;
 }
 
 static cbor_item_t *_makeCoordItem(CswCoord value) {
@@ -455,35 +450,36 @@ cbor_item_t *_cswParameterAsMap(CswParameter param) {
 
 // ---- From CBOR (TODO: In progress, not yet implemented...) ---
 
-// Since the string values returned from CBOR are not null-terminated, we need to allocate
-// a null-terminated copy. Note that the return value needs to be freed at some point.
-char* _cswGetString(cbor_item_t* item) {
-    return strndup((char*)cbor_string_handle(item), (int)cbor_string_length(item));
-}
-
-// Returns an Parameter for the given CBOR map
-CswParameter _cswParameterFromMap(cbor_item_t *map) {
-    CswParameter param = {};
-    for (size_t i = 0; i < cbor_map_size(map); i++) {
-        struct cbor_pair pair = cbor_map_handle(map)[i];
-        char *key = (char *) cbor_string_handle(pair.key);
-        param.keyType = _keyTypeValue(key);
-
-        // XXX TODO: In progress...
-    }
-    return param;
-}
-
-// Makes an array of CswParameters from the given CBOR Item.
-// The return type is a CswStruct, since it contains an array or params as well as the length of the array.
-// Note: Memory for sparamSet.params needs to be freed eventually.
-CswParamSet _cswGetParamSet(cbor_item_t* item) {
-    CswParamSet paramSet = {};
-    paramSet.numParams = cbor_array_size(item);
-    paramSet.params = malloc(paramSet.numParams * sizeof(CswParameter));
-    for (size_t i = 0; i < paramSet.numParams; i++) {
-        paramSet.params[i] = _cswParameterFromMap(cbor_array_handle(item)[i]);
-    }
-    return paramSet;
-}
-
+//// Since the string values returned from CBOR are not null-terminated, we need to allocate
+//// a null-terminated copy. Note that the return value needs to be freed at some point.
+//char* _cswGetString(cbor_item_t* item) {
+//    return strndup((char*)cbor_string_handle(item), (int)cbor_string_length(item));
+//}
+//
+// XXX TODO FIXME: Change to use flat encoding
+//// Returns an Parameter for the given CBOR map
+//CswParameter _cswParameterFromMap(cbor_item_t *map) {
+//    CswParameter param = {};
+//    for (size_t i = 0; i < cbor_map_size(map); i++) {
+//        struct cbor_pair pair = cbor_map_handle(map)[i];
+//        char *key = (char *) cbor_string_handle(pair.key);
+//        param.keyType = _keyTypeValue(key);
+//
+//        // XXX TODO: In progress...
+//    }
+//    return param;
+//}
+//
+//// Makes an array of CswParameters from the given CBOR Item.
+//// The return type is a CswStruct, since it contains an array or params as well as the length of the array.
+//// Note: Memory for sparamSet.params needs to be freed eventually.
+//CswParamSet _cswGetParamSet(cbor_item_t* item) {
+//    CswParamSet paramSet = {};
+//    paramSet.numParams = cbor_array_size(item);
+//    paramSet.params = malloc(paramSet.numParams * sizeof(CswParameter));
+//    for (size_t i = 0; i < paramSet.numParams; i++) {
+//        paramSet.params[i] = _cswParameterFromMap(cbor_array_handle(item)[i]);
+//    }
+//    return paramSet;
+//}
+//

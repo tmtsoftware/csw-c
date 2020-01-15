@@ -20,7 +20,7 @@ install them from the source code. The makefiles will look for them in the stand
 
 <!--* libev, libev-devel  (Not currently needed: Will be needed if event subscription is implemented)-->
 
-* Note: For CentOS you need to install cmake-3.14 and libcbor manually.
+* Note: For CentOS-7 you need to install cmake-3.14 and libcbor manually.
 
 * Note: For MacOS, you can install the dependencies as follows:
 ```
