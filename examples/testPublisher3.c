@@ -18,7 +18,7 @@ static void publishAltAzCoord(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "CSW.testassembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -39,7 +39,7 @@ static void publishCometCoord(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "CSW.testassembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -61,7 +61,7 @@ static void publishMinorPlanetCoord(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "CSW.testassembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -84,7 +84,7 @@ static void publishSolarSystemCoords(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "CSW.testassembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -107,7 +107,7 @@ static void publishEqCoords(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "CSW.testassembly", "myAssemblyEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);

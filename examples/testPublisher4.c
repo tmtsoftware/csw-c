@@ -31,7 +31,7 @@ int main() {
     CswParameter params[] = {param};
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
-    CswEvent event = cswMakeEvent(SystemEvent, "csw.assembly", "myAssemblyEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, "CSW.testassembly", "myAssemblyEvent", paramSet);
 
     cswEventPublish(publisher, event);
 
