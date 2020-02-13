@@ -1,5 +1,8 @@
 package org.tmt.csw.testassembly
 
+import java.io.{File, FileOutputStream}
+import java.time.Instant
+
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
 import csw.command.client.messages.TopLevelActorMessage
@@ -12,12 +15,14 @@ import csw.params.commands.ControlCommand
 import csw.time.core.models.UTCTime
 import csw.params.core.models.Id
 import csw.params.events.{Event, EventKey, EventName, SystemEvent}
+import csw.params.core.formats.JsonSupport
+import csw.params.core.formats.ParamCodecs._
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
 import TestAssemblyHandlers._
-import csw.params.core.generics.{Key, KeyType}
 import csw.prefix.models.Prefix
 import csw.prefix.models.Subsystem.CSW
+import io.bullet.borer.Json
 
 object TestAssemblyHandlers {
 
@@ -36,47 +41,48 @@ object TestAssemblyHandlers {
   ).map(EventName).toSet
   private val eventKeys = eventNames.map(EventKey(prefix, _))
 
-  private def checkSimpleDoubleEvent(event: SystemEvent): Unit = {
-    val eventValueKey: Key[Double] = KeyType.DoubleKey.make("DoubleValue")
-    event.get(eventValueKey)
-      .foreach { p =>
-        val eventValue = p.head
-      }
-
-  }
-
-  private def checkEvent(event: SystemEvent): Unit = {
-    event.eventName.name match {
-      case "SimpleDoubleEvent" => checkSimpleDoubleEvent(event)
-      case "IntArrayMatrixEvent" =>
-      case "DoubleArrayMatrtixEvent" =>
-      case "AltAzCoordEvent" =>
-      case "CometCoordEvent" =>
-      case "MinorPlanetCoordEvent" =>
-      case "SolarSystemCoordsEvent" =>
-      case "EqCoordsEvent" =>
-      case "StructEvent" =>
-    }
-  }
+  // Generate a test file with the JSON for the received events, as an easy way to compare with the expected values
+  private val testFile                         = new File("/tmp/TestAssemblyHandlers.out")
+  private var testFd: Option[FileOutputStream] = None
+  private var eventCount                       = 0;
 
   // Actor to receive events
   private def eventHandler(log: Logger): Behavior[Event] = {
+    def handleEvent(event: SystemEvent): Unit = {
+      // Check that event time is recent
+      if (UTCTime.now().value.getEpochSecond - event.eventTime.value.getEpochSecond < 5) {
+        // Create the file when the first event is received from the test, close it on the last
+        if (eventCount == 0) {
+          testFd.foreach(_.close())
+          testFd = Some(new FileOutputStream(testFile))
+        }
+        eventCount = eventCount + 1
+        val ev: Event = event.copy(eventId = Id("test"), eventTime = UTCTime(Instant.ofEpochSecond(0)))
+        val json      = Json.encode(ev).toUtf8String + "\n"
+        testFd.foreach(_.write(json.getBytes))
+        if (testFd.isEmpty)
+          log.warn(s"Can't save $event")
+
+        if (eventCount == eventNames.size) {
+          testFd.foreach(_.close())
+          testFd = None
+          eventCount = 0
+        }
+      } else {
+        log.warn(s"Event is too old: UTC Now: ${UTCTime.now().value}, Event Time: ${event.eventTime.value}")
+      }
+    }
+
     Behaviors.receive { (_, msg) =>
       msg match {
         case event: SystemEvent =>
           log.info(s"received event: $event")
-          try{
-            checkEvent(event)
+          try {
+            handleEvent(event)
           } catch {
             case ex: Exception =>
               log.error(s"Test failed for event $event", ex = ex)
           }
-//          val eventValueKey: Key[Int] = KeyType.IntKey.make("eventValue")
-//          event.get(eventValueKey)
-//            .foreach { p =>
-//              val eventValue = p.head
-//              log.info(s"Received event with event time: ${event.eventTime} with value: $eventValue")
-//            }
           Behaviors.same
         case x =>
           log.error(s"Unexpected message: $x")

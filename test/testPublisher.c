@@ -2,6 +2,10 @@
 // Created by abrighto on 2/12/20.
 //
 
+#include <stdio.h>
+#include <libgen.h>
+#include <zconf.h>
+#include <stdlib.h>
 #include "csw/csw.h"
 
 /*
@@ -18,7 +22,7 @@
  * The test assembly subscribes to the events published by this test.
  */
 
-static char* prefix = "CSW.TestPublisher";
+static char *prefix = "CSW.TestPublisher";
 
 // Tests publishing a simple event with multiple values
 static void publishSimpleEvent(CswEventServiceContext publisher) {
@@ -288,8 +292,7 @@ static void publishStruct(CswEventServiceContext publisher) {
 }
 
 
-
-int main() {
+int main(int argc, char **argv) {
     CswEventServiceContext publisher = cswEventPublisherInit();
 
     publishSimpleEvent(publisher);
@@ -304,4 +307,15 @@ int main() {
     publishAltAzCoord(publisher);
 
     publishStruct(publisher);
+
+    char *dir = dirname(argv[0]);
+    char cmd[PATH_MAX];
+    sprintf(cmd, "cmp %s/TestAssemblyHandlers.out /tmp/TestAssemblyHandlers.out", dir);
+    int status = system(cmd);
+    if (status == 0)
+        printf("All tests passed.\n");
+    else
+        printf("Test Failed\n");
+
+    return status;
 }
