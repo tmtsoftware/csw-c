@@ -36,17 +36,46 @@ object TestAssemblyHandlers {
   ).map(EventName).toSet
   private val eventKeys = eventNames.map(EventKey(prefix, _))
 
+  private def checkSimpleDoubleEvent(event: SystemEvent): Unit = {
+    val eventValueKey: Key[Double] = KeyType.DoubleKey.make("DoubleValue")
+    event.get(eventValueKey)
+      .foreach { p =>
+        val eventValue = p.head
+      }
+
+  }
+
+  private def checkEvent(event: SystemEvent): Unit = {
+    event.eventName.name match {
+      case "SimpleDoubleEvent" => checkSimpleDoubleEvent(event)
+      case "IntArrayMatrixEvent" =>
+      case "DoubleArrayMatrtixEvent" =>
+      case "AltAzCoordEvent" =>
+      case "CometCoordEvent" =>
+      case "MinorPlanetCoordEvent" =>
+      case "SolarSystemCoordsEvent" =>
+      case "EqCoordsEvent" =>
+      case "StructEvent" =>
+    }
+  }
+
   // Actor to receive events
   private def eventHandler(log: Logger): Behavior[Event] = {
     Behaviors.receive { (_, msg) =>
       msg match {
         case event: SystemEvent =>
-          log.debug(s"received event: $event")
+          log.info(s"received event: $event")
+          try{
+            checkEvent(event)
+          } catch {
+            case ex: Exception =>
+              log.error(s"Test failed for event $event", ex = ex)
+          }
 //          val eventValueKey: Key[Int] = KeyType.IntKey.make("eventValue")
 //          event.get(eventValueKey)
 //            .foreach { p =>
 //              val eventValue = p.head
-//              log.debug(s"Received event with event time: ${event.eventTime} with value: $eventValue")
+//              log.info(s"Received event with event time: ${event.eventTime} with value: $eventValue")
 //            }
           Behaviors.same
         case x =>

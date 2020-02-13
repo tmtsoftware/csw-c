@@ -4,6 +4,22 @@
 
 #include "csw/csw.h"
 
+/*
+ * Note: This test assumes the following applications are running:
+ *
+ * CSW Services:
+ *   csw-services.sh start
+ *
+ * Test Assembly:
+ *  cd testSupport
+ *  sbt stage
+ *  test-deploy/target/universal/stage/bin/test-container-cmd-app --local test-deploy/src/main/resources/TestContainer.conf
+ *
+ * The test assembly subscribes to the events published by this test.
+ */
+
+static char* prefix = "CSW.TestPublisher";
+
 // Tests publishing a simple event with multiple values
 static void publishSimpleEvent(CswEventServiceContext publisher) {
     double ar[] = {1.1, 2.2, 3.3};
@@ -11,7 +27,7 @@ static void publishSimpleEvent(CswEventServiceContext publisher) {
     CswParameter param = cswMakeParameter("DoubleValue", DoubleKey, values, "arcmin");
     CswParameter params[] = {param};
     CswParamSet paramSet = {.params = params, .numParams = 1};
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "SimpleDoubleEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "SimpleDoubleEvent", paramSet);
     cswEventPublish(publisher, event);
     cswFreeEvent(event);
 }
@@ -65,7 +81,7 @@ static void publishInts(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 3};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "IntArrayMatrixEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "IntArrayMatrixEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -121,7 +137,7 @@ static void publishDoubles(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 3};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "DoubleArrayMatrtixEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "DoubleArrayMatrtixEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -144,7 +160,7 @@ static void publishAltAzCoord(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "AltAzCoordEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "AltAzCoordEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -165,7 +181,7 @@ static void publishCometCoord(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "CometCoordEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "CometCoordEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -187,7 +203,7 @@ static void publishMinorPlanetCoord(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "MinorPlanetCoordEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "MinorPlanetCoordEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -210,7 +226,7 @@ static void publishSolarSystemCoords(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "SolarSystemCoordsEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "SolarSystemCoordsEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -233,7 +249,7 @@ static void publishEqCoords(CswEventServiceContext publisher) {
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
     // -- Event --
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "EqCoordsEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "EqCoordsEvent", paramSet);
 
     // -- Publish --
     cswEventPublish(publisher, event);
@@ -264,7 +280,7 @@ static void publishStruct(CswEventServiceContext publisher) {
     CswParameter params[] = {param};
     CswParamSet paramSet = {.params = params, .numParams = 1};
 
-    CswEvent event = cswMakeEvent(SystemEvent, "CSW.TestPublisher", "StructEvent", paramSet);
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "StructEvent", paramSet);
 
     cswEventPublish(publisher, event);
 
