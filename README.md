@@ -5,7 +5,7 @@ Subscribing to events is not yet implemented.
 
 Events are encoded using [CBOR](https://cbor.io/) and stored in [Redis](https://redis.io/).
 
-See the [examples](./examples) directory for examples of how to publish different kinds of events.
+See [test/testPublisher.c](./test/testPublisher.c) for examples of how to publish different kinds of events.
 
 
 ## Dependencies
@@ -59,9 +59,7 @@ which removes the local build directory and:
 which removes the installed files.
 
 
-## Running the Examples
+## Running the Tests
 
-Once compiled, you can run the applications under the examples directory, 
-but first run `test-assembly-client` from the [csw-prod-qa](https://github.com/tmtsoftware/csw-prod-qa) 
-project. It will subscribe to the events that the examples publish and print them out.
+See [test/README.md](test/README.md) for instructions on how to run the test.
 
