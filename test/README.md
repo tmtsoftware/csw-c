@@ -8,18 +8,25 @@ One is provided under the `testSupport` directory.
 
 * First start the CSW services
 
-    csw-services.sh start
+    `csw-services.sh start`
+
+    or at least:
+
+    `csw-services.sh start -es 6379`
+
+    to start only the event service.
 
 * Then start the test assembly:
-
+```shell script
     cd testSupport
     sbt stage
     cd test-deploy
     ./target/universal/stage/bin/test-container-cmd-app --local ./src/main/resources/TestContainer.conf
- 
+ ```
+
  * Then run the test publisher defined in this directory:
  
-    testPublisher
+    `testPublisher`
  
  The test assembly writes a file `/tmp/TestAssemblyHandlers.out` containing the JSON for the received events.
  The testPublisher compares that file to a file that was previously saved and is known to be correct.
