@@ -10,10 +10,6 @@ One is provided under the `testSupport` directory.
 
     `csw-services.sh start`
 
-    or at least:
-
-    `csw-services.sh start -es 6379`
-
     to start only the event service.
 
 * Then start the test assembly:
