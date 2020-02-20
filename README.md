@@ -39,7 +39,15 @@ To build the the library (libcsw) and the example applications, run:
 
     make
 
-And optionally:
+To run the tests:
+
+    make test
+
+Note that this requires that csw-services.sh and sbt are in your shell path. 
+`make test` compiles and runs a Scala based assembly in the background and uses it
+to test for correct serialization and communication.
+
+To install (optional) run:
 
     sudo make install
 
@@ -61,5 +69,5 @@ which removes the installed files.
 
 ## Running the Tests
 
-See [test/README.md](test/README.md) for instructions on how to run the test.
+See [test/README.md](test/README.md) for additional instructions on how to run the test.
 

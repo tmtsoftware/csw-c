@@ -6,6 +6,12 @@ One is provided under the `testSupport` directory.
 
 ## Running the Test
 
+The easiest way to run the test is:
+
+    make test
+
+from the top level directory. To run the tests manually:
+
 * First start the CSW services
 
     `csw-services.sh start`
@@ -29,4 +35,7 @@ One is provided under the `testSupport` directory.
  It then prints out "All Tests Passed" if the files are the same.
  
  (Note that the EventTime fields and Ids are changed in the JSON file for comparison).
+ 
+ These steps are automated in the [runTest.sh](runTest.sh) script.
+ 
  

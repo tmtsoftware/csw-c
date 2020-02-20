@@ -15,7 +15,6 @@ import csw.params.commands.ControlCommand
 import csw.time.core.models.UTCTime
 import csw.params.core.models.Id
 import csw.params.events.{Event, EventKey, EventName, SystemEvent}
-import csw.params.core.formats.JsonSupport
 import csw.params.core.formats.ParamCodecs._
 
 import scala.concurrent.{ExecutionContextExecutor, Future}
@@ -38,38 +37,28 @@ object TestAssemblyHandlers {
     "SolarSystemCoordsEvent",
     "EqCoordsEvent",
     "StructEvent"
-  ).map(EventName).toSet
+  ).map(EventName)
   private val eventKeys = eventNames.map(EventKey(prefix, _))
 
   // Generate a test file with the JSON for the received events, as an easy way to compare with the expected values
-  private val testFile                         = new File("/tmp/TestAssemblyHandlers.out")
-  private var testFd: Option[FileOutputStream] = None
-  private var eventCount                       = 0;
+  private val testFile = new File("/tmp/TestAssemblyHandlers.out")
 
   // Actor to receive events
   private def eventHandler(log: Logger): Behavior[Event] = {
     def handleEvent(event: SystemEvent): Unit = {
       // Check that event time is recent
-      if (UTCTime.now().value.getEpochSecond - event.eventTime.value.getEpochSecond < 5) {
-        // Create the file when the first event is received from the test, close it on the last
-        if (eventCount == 0) {
-          testFd.foreach(_.close())
-          testFd = Some(new FileOutputStream(testFile))
+      // Create the file when the first event is received from the test, close it on the last
+      if (eventNames.contains(event.eventName)) {
+        if (UTCTime.now().value.getEpochSecond - event.eventTime.value.getEpochSecond < 10) {
+          val append    = event.eventName != eventNames.head
+          val testFd    = new FileOutputStream(testFile, append)
+          val ev: Event = event.copy(eventId = Id("test"), eventTime = UTCTime(Instant.ofEpochSecond(0)))
+          val json      = Json.encode(ev).toUtf8String + "\n"
+          testFd.write(json.getBytes)
+          testFd.close()
+        } else {
+          log.warn(s"Event is too old: UTC Now: ${UTCTime.now().value}, Event Time: ${event.eventTime.value}")
         }
-        eventCount = eventCount + 1
-        val ev: Event = event.copy(eventId = Id("test"), eventTime = UTCTime(Instant.ofEpochSecond(0)))
-        val json      = Json.encode(ev).toUtf8String + "\n"
-        testFd.foreach(_.write(json.getBytes))
-        if (testFd.isEmpty)
-          log.warn(s"Can't save $event")
-
-        if (eventCount == eventNames.size) {
-          testFd.foreach(_.close())
-          testFd = None
-          eventCount = 0
-        }
-      } else {
-        log.warn(s"Event is too old: UTC Now: ${UTCTime.now().value}, Event Time: ${event.eventTime.value}")
       }
     }
 
@@ -114,7 +103,7 @@ class TestAssemblyHandlers(ctx: ActorContext[TopLevelActorMessage], cswCtx: CswC
 
   private def startSubscribingToEvents(): Unit = {
     val eventHandlerActor = ctx.spawn(eventHandler(log), "eventHandlerActor")
-    eventService.defaultSubscriber.subscribeActorRef(eventKeys, eventHandlerActor)
+    eventService.defaultSubscriber.subscribeActorRef(eventKeys.toSet, eventHandlerActor)
   }
 
   override def onLocationTrackingEvent(trackingEvent: TrackingEvent): Unit = {}

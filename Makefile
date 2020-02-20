@@ -14,6 +14,9 @@ install:
 clean:
 	rm -rf $(BUILD_DIR)
 
+test: all
+	(cd test; runTests.sh)
+
 # May require sudo, actual install dir might be different
 uninstall:
 	rm -f $(INSTALL_DIR)/lib64/libcsw.a $(INSTALL_DIR)/lib64/libcsw-shared.* $(INSTALL_DIR)/include/csw/csw.h

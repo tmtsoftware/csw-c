@@ -308,6 +308,9 @@ int main(int argc, char **argv) {
 
     publishStruct(publisher);
 
+    // Give the assembly time to receive the events and write the file
+    sleep(3);
+
     char *dir = dirname(argv[0]);
     char cmd[PATH_MAX];
     sprintf(cmd, "cmp %s/TestAssemblyHandlers.out /tmp/TestAssemblyHandlers.out", dir);
