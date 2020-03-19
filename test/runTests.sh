@@ -12,7 +12,7 @@ test-deploy/target/universal/stage/bin/test-container-cmd-app --local test-deplo
 assemblyPid=$!
 cd ..
 # give the background assembly time to initialize
-sleep 5
+sleep 30
 # Run the C based tests
 ../build/test/testPublisher
 kill $assemblyPid
