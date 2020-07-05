@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.16)
 project(csw_c C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+#set( CMAKE_VERBOSE_MAKEFILE on )
 
 add_subdirectory (csw)
 add_subdirectory (test)

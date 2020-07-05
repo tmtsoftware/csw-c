@@ -50,11 +50,21 @@ object TestAssemblyHandlers {
       // Create the file when the first event is received from the test, close it on the last
       if (eventNames.contains(event.eventName)) {
         if (UTCTime.now().value.getEpochSecond - event.eventTime.value.getEpochSecond < 10) {
-          val append    = event.eventName != eventNames.head
-          val testFd    = new FileOutputStream(testFile, append)
-          val ev: Event = event.copy(eventId = Id("test"), eventTime = UTCTime(Instant.ofEpochSecond(0)))
+          val append = event.eventName != eventNames.head
+          val testFd = new FileOutputStream(testFile, append)
+
+//          val ev: Event = event.copy(eventId = Id("test"), eventTime = UTCTime(Instant.ofEpochSecond(0)))
+//          val json      = Json.encode(ev).toUtf8String + "\n"
+//          testFd.write(json.getBytes)
+
+          val ev: Event = event
           val json      = Json.encode(ev).toUtf8String + "\n"
-          testFd.write(json.getBytes)
+          // SystemEvent constructor is private, but we need to change two fields in order to compare results
+          val jsonStr1 =
+            json.replaceAll("\"eventId\":\"[^\"]*\"", "\"eventId\":\"test\"")
+          val jsonStr2 = jsonStr1.replaceAll("\"eventTime\":\"[^\"]*\"", "\"eventTime\":\"1970-01-01T00:00:00Z\"")
+          testFd.write(jsonStr2.getBytes)
+
           testFd.close()
         } else {
           log.warn(s"Event is too old: UTC Now: ${UTCTime.now().value}, Event Time: ${event.eventTime.value}")
@@ -95,9 +105,10 @@ class TestAssemblyHandlers(ctx: ActorContext[TopLevelActorMessage], cswCtx: CswC
   implicit val ec: ExecutionContextExecutor = ctx.executionContext
   private val log                           = loggerFactory.getLogger
 
+  log.info("Initializing test assembly...")
+  startSubscribingToEvents()
+
   override def initialize(): Future[Unit] = {
-    log.info("Initializing test assembly...")
-    startSubscribingToEvents()
     Future.unit
   }
 

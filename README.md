@@ -14,9 +14,9 @@ depending on the Linux flavor (or `brew`, `port` for Macs). Alternatively, you c
 install them from the source code. The makefiles will look for them in the standard places:
 
 * cmake
-* libcbor, libcbor-devel
-* libuuid, libuuid-devel
-* hiredis, hiredis-devel
+* libcbor, libcbor-devel (for Fedora, CentOS) or libcbor-dev (for Ubuntu)
+* libuuid, libuuid-devel (Fedora), uuid-dev (Ubuntu)
+* hiredis, hiredis-devel (Fedora), libhiredis-dev (Ubuntu)
 
 <!--* libev, libev-devel  (Not currently needed: Will be needed if event subscription is implemented)-->
 
