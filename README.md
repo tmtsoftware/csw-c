@@ -3,6 +3,9 @@
 This project provides a C API for publishing events to the [CSW](https://github.com/tmtsoftware/csw) Event Service.
 Subscribing to events is not yet implemented.
 
+Note that this library does not yet use the location service or the redis sentinel (cluster).
+Instead, it connects to the default redis instance at localhost:6379, which is where csw-services.sh starts it.
+
 Events are encoded using [CBOR](https://cbor.io/) and stored in [Redis](https://redis.io/).
 
 See [test/testPublisher.c](./test/testPublisher.c) for examples of how to publish different kinds of events.
