@@ -1,7 +1,6 @@
 package org.tmt.csw.testassembly
 
 import java.io.{File, FileOutputStream}
-import java.time.Instant
 
 import akka.actor.typed.Behavior
 import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
@@ -108,9 +107,7 @@ class TestAssemblyHandlers(ctx: ActorContext[TopLevelActorMessage], cswCtx: CswC
   log.info("Initializing test assembly...")
   startSubscribingToEvents()
 
-  override def initialize(): Future[Unit] = {
-    Future.unit
-  }
+  override def initialize(): Unit = {}
 
   private def startSubscribingToEvents(): Unit = {
     val eventHandlerActor = ctx.spawn(eventHandler(log), "eventHandlerActor")
@@ -125,7 +122,7 @@ class TestAssemblyHandlers(ctx: ActorContext[TopLevelActorMessage], cswCtx: CswC
 
   override def onOneway(runId: Id, controlCommand: ControlCommand): Unit = {}
 
-  override def onShutdown(): Future[Unit] = { Future.unit }
+  override def onShutdown(): Unit = {}
 
   override def onGoOffline(): Unit = {}
 
