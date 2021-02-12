@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [csw-c v3.0.1] - 2021-02-12
+
+### Changed
+
+- Updated test version to CSW-3.0.1
+
 ## [csw-c v3.0.0-RC1] - 2020-12-01
 
 ### Changed
