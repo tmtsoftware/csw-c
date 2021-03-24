@@ -4,7 +4,7 @@ This project provides a C API for publishing events to the [CSW](https://github.
 Subscribing to events is not yet implemented.
 
 Note that this library does not yet use the location service or the redis sentinel (cluster).
-Instead, it connects to the default redis instance at localhost:6379, which is where csw-services.sh starts it.
+Instead, it connects to the default redis instance at localhost:6379, which is where csw-services starts it.
 
 Events are encoded using [CBOR](https://cbor.io/) and stored in [Redis](https://redis.io/).
 
@@ -46,7 +46,7 @@ To run the tests:
 
     make test
 
-Note that this requires that csw-services.sh and sbt are in your shell path. 
+Note that this requires that csw-services and sbt are in your shell path. 
 `make test` compiles and runs a Scala based assembly in the background and uses it
 to test for correct serialization and communication.
 

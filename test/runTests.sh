@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Script that starts the CSW services, compiles and runs the test assembly and then runs the C based tests.
-# Assumes that csw-services.sh and sbt are all in your shell path.
+# Assumes that csw-services and sbt are all in your shell path.
 
 CSW_VERSION=3.0.1
 logfile=test.log

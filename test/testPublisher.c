@@ -12,7 +12,7 @@
  * Note: This test assumes the following applications are running:
  *
  * CSW Services:
- *   csw-services.sh start
+ *   csw-services start
  *
  * Test Assembly:
  *  cd testSupport
