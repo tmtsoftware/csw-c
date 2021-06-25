@@ -14,7 +14,7 @@ from the top level directory. To run the tests manually:
 
 * First start the CSW services
 
-    `csw-services.sh start`
+    `csw-services start`
 
     to start only the event service.
 

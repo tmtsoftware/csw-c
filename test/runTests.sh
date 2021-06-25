@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Script that starts the CSW services, compiles and runs the test assembly and then runs the C based tests.
-# Assumes that csw-services.sh and sbt are all in your shell path.
+# Assumes that csw-services and sbt are all in your shell path.
 
-CSW_VERSION=3.0.0-RC1
+CSW_VERSION=3.0.1
 logfile=test.log
 if ! hash csw-services 2>/dev/null ; then
     echo >&2 "Please install csw-services (run: cs install csw-services $CSW_VERSION).  Aborting."
