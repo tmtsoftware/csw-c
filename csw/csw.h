@@ -284,7 +284,7 @@ int cswEventPublish(CswEventServiceContext context, CswEvent event);
 
 // --- Parameters ---
 
-CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize);
+CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[], int arraySize);
 //CswArrayValue makeMatrixValues(void*** values, int numMatrices, int numRows, int numCols);
 
 CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units);
