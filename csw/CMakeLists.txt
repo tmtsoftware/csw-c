@@ -2,7 +2,7 @@
 set(sources Event.c RedisConnector.c Parameter.c EventTime.c EventPublisher.c)
 
 add_library(csw STATIC ${sources} Coords.c)
-#add_library(csw-shared SHARED ${sources})
+add_library(csw-shared SHARED ${sources})
 
 find_package(hiredis REQUIRED)
 #find_package(ev REQUIRED)
@@ -15,16 +15,16 @@ set_target_properties(csw PROPERTIES
         PUBLIC_HEADER csw.h
         VERSION 1.0.0)
 
-#set_target_properties(csw-shared PROPERTIES
-#        PUBLIC_HEADER csw.h
-#        SOVERSION 1)
+set_target_properties(csw-shared PROPERTIES
+        PUBLIC_HEADER csw.h
+        SOVERSION 1)
 
 include(GNUInstallDirs)
 
-#install(TARGETS csw csw-shared
-#        PUBLIC_HEADER
-#        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/csw
-#        )
+install(TARGETS csw csw-shared
+        PUBLIC_HEADER
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/csw
+        )
 
 install(TARGETS csw
         PUBLIC_HEADER

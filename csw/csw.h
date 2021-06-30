@@ -205,8 +205,32 @@ typedef struct {
 // An EventTime containing seconds since the epoch (1970) and the offset from seconds in nanoseconds
 typedef struct {
     long seconds;
-    int nanos;
+    long nanos;
 } CswEventTime;
+
+// These parameter time value types have the same structure as event time
+typedef CswEventTime CswUtcTime;
+typedef CswEventTime CswTaiTime;
+
+/**
+ * Returns an instance containing the current UTC time
+ */
+CswUtcTime cswUtcTime();
+
+/**
+ * Returns an instance containing the current TAI time
+ */
+CswUtcTime cswTaiTime();
+
+/**
+ * Constructor for UTC Time
+ */
+CswUtcTime cswMakeUtcTime(long seconds, int nanos);
+
+/**
+ * Constructor for TAI Time
+ */
+CswUtcTime cswMakeTaiTime(long seconds, int nanos);
 
 typedef enum {
     SystemEvent,
@@ -284,7 +308,7 @@ int cswEventPublish(CswEventServiceContext context, CswEvent event);
 
 // --- Parameters ---
 
-CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize);
+CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[], int arraySize);
 //CswArrayValue makeMatrixValues(void*** values, int numMatrices, int numRows, int numCols);
 
 CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units);
