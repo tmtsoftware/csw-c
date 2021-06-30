@@ -43,6 +43,69 @@ typedef enum {
     DoubleMatrixKey
 } CswKeyType;
 
+// CswUnits for parameters
+typedef enum {
+    // SI units
+    csw_unit_angstrom,  // "Angstrom", "10 -1 nm"
+    csw_unit_arcmin,  // "arcmin", "arc minute; angular measurement"
+    csw_unit_arcsec,  // "arcsec", "arc second: angular measurement"
+    csw_unit_day,  // "d", "day - 24 hours"
+    csw_unit_degree,  // "deg", "degree: agular measurement 1/360 of full rotation"
+    csw_unit_elvolt,  // "eV", "electron volt 1.6022x10-19 J"
+    csw_unit_gram,  // "g", "gram 10-3 kg"
+    csw_unit_hour,  // "h", "hour 3.6x10+3 s"
+    csw_unit_hertz,  // "Hz", "frequency"
+    csw_unit_joule,  // "J", "Joule: energy N m"
+    csw_unit_kelvin,  // "K", "Kelvin: temperature with a null point at absolute zero"
+    csw_unit_kilogram,  // "kg", "kilogram, base unit of mass in SI"
+    csw_unit_kilometer, // "km", "kilometers - 10+3 m"
+    csw_unit_liter,  // "l", "liter, metric unit of volume 10+3 cm+3"
+    csw_unit_meter,  // "m", "meter: base unit of length in SI"
+    csw_unit_marcsec,  // "mas", "milli arc second: angular measurement 10-3 arcsec"
+    csw_unit_millimeter, // "mm", "millimeters - 10-3 m"
+    csw_unit_millisecond, // "ms", "milliseconds - 10-3 s"
+    csw_unit_micron,  // "µm", "micron: alias for micrometer"
+    csw_unit_micrometer, // "µm", "micron: 10-6 m"
+    csw_unit_minute,  // "min", "minute 6x10+1 s"
+    csw_unit_newton,  // "N", "Newton: force"
+    csw_unit_pascal,  // "Pa", "Pascal: pressure"
+    csw_unit_radian,  // "rad", "radian: angular measurement of the ratio between the length of an arc and its radius"
+    csw_unit_second,  // "s", "second: base unit of time in SI"
+    csw_unit_sday,  // "sday", "sidereal day is the time of one rotation of the Earth: 8.6164x10+4 s"
+    csw_unit_steradian, // "sr", "steradian: unit of solid angle in SI - rad+2"
+    csw_unit_microarcsec, // "µas", "micro arcsec: angular measurement"
+    csw_unit_volt,  // "V", "Volt: electric potential or electromotive force"
+    csw_unit_watt,  // "W", "Watt: power"
+    csw_unit_week,  // "wk", "week - 7 d"
+    csw_unit_year,  // "yr", "year - 3.6525x10+2 d"
+
+    // CGS units
+    csw_unit_coulomb,  // "C", "coulomb: electric charge"
+    csw_unit_centimeter, // "cm", "centimeter"
+    csw_unit_erg,  // "erg", "erg: CGS unit of energy"
+
+    // Astropyhsics units
+    csw_unit_au,  // "AU", "astronomical unit: approximately the mean Earth-Sun distance"
+    csw_unit_jansky,  // "Jy", "Jansky: spectral flux density - 10-26 W/Hz m+2"
+    csw_unit_lightyear, // "lyr", "light year - 9.4607x10+15 m"
+    csw_unit_mag,  // "mag", "stellar magnitude"
+
+    // Imperial units
+    csw_unit_cal, // "cal", "thermochemical calorie: pre-SI metric unit of energy"
+    csw_unit_foot, // "ft", "international foot - 1.2x10+1 inch"
+    csw_unit_inch, // "inch", "international inch - 2.54 cm"
+    csw_unit_pound, // "lb", "international avoirdupois pound - 1.6x10+1 oz"
+    csw_unit_mile, // "mi", "international mile - 5.28x10+3 ft"
+    csw_unit_ounce, // "oz", "international avoirdupois ounce"
+    csw_unit_yard, // "yd", "international yard - 3 ft"
+
+    // Others - engineering
+    csw_unit_NoUnits, // "none", "scalar - no units specified"
+    csw_unit_encoder, // "enc", "encoder counts"
+    csw_unit_count, // "ct", "counts as for an encoder or detector"
+    csw_unit_pix,  // "pix", "pixel"
+} CswUnits;
+
 
 // --- Coordinate Types ----
 
@@ -184,8 +247,8 @@ typedef struct {
     // Contains an Array of values of the given type
     CswArrayValue values;
 
-    // See https://tmtsoftware.github.io/csw/0.7.0-RC1/messages/units.html for list of unit names.
-    const char *units;
+    // CswUnits: enum type corresponding to the defined CSW units
+    CswUnits units;
 } CswParameter;
 
 
@@ -309,9 +372,8 @@ int cswEventPublish(CswEventServiceContext context, CswEvent event);
 // --- Parameters ---
 
 CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[], int arraySize);
-//CswArrayValue makeMatrixValues(void*** values, int numMatrices, int numRows, int numCols);
 
-CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units);
+CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, CswUnits units);
 
 // Free any allocated memory for the parameter
 void cswFreeParameter(CswParameter param);

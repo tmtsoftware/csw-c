@@ -1,6 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+### Changed
+
+- Changed type of units argument for a CSW Parameter to an Enum
+
+- Added support for UTCTime and TAITime parameters
+
+- Added tests for String and Choice (enum) type parameters
+
 ## [csw-c v3.0.1] - 2021-02-12
 
 ### Changed

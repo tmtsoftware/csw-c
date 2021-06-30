@@ -9,10 +9,80 @@
 #include "csw.h"
 #include "cswImpl.h"
 
+// Must correspond to the CswUnits enum type
+static char *_unitNames[] = {
+        "angstrom",
+        "arcmin",
+        "arcsec",
+        "day",
+        "degree",
+        "elvolt",
+        "gram",
+        "hour",
+        "hertz",
+        "joule",
+        "kelvin",
+        "kilogram",
+        "kilometer",
+        "liter",
+        "meter",
+        "marcsec",
+        "millimeter",
+        "millisecond",
+        "micron",
+        "micrometer",
+        "minute",
+        "newton",
+        "pascal",
+        "radian",
+        "second",
+        "sday",
+        "steradian",
+        "microarcsec",
+        "volt",
+        "watt",
+        "week",
+        "year",
+
+        // CGS units
+        "coulomb",
+        "centimeter",
+        "erg",
+
+        // Astropyhsics units
+        "au",
+        "jansky",
+        "lightyear",
+        "mag",
+
+        // Imperial units
+        "cal",
+        "foot",
+        "inch",
+        "pound",
+        "mile",
+        "ounce",
+        "yard",
+
+        // Others - engineering
+        "NoUnits",
+        "encoder",
+        "count",
+        "pix",
+};
+
+/**
+ * Returns the name of the given CSW unit
+ * @param unit an enum value indicating the units for a parameter
+ */
+const char *cswUnitName(CswUnits unit) {
+    return _unitNames[unit];
+}
+
 /**
  * Constructor for CswParameter.
  */
-CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, const char *units) {
+CswParameter cswMakeParameter(const char *keyName, CswKeyType keyType, CswArrayValue values, CswUnits units) {
     CswParameter p = {.keyType = keyType, .keyName = keyName, .values = values, .units = units};
     return p;
 }
@@ -215,7 +285,7 @@ struct cbor_pair _cswMakeItemPair(const char *key, cbor_item_t *value) {
     };
 }
 
-struct cbor_pair _cswMakeParamSetItemPair(const CswParameter* paramSet, int numParams) {
+struct cbor_pair _cswMakeParamSetItemPair(const CswParameter *paramSet, int numParams) {
     cbor_item_t *array = cbor_new_definite_array(numParams);
     for (int i = 0; i < numParams; i++) {
         cbor_array_push(array, _cswParameterAsMap(paramSet[i]));
@@ -244,10 +314,10 @@ static cbor_item_t *_makeStructItem(CswParamSet value) {
  *
  * @return a CswArrayValue that can be used as the parameter value for *ArrayKey types
  */
-CswArrayValue makeArrayValues(void** values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize) {
+CswArrayValue makeArrayValues(void **values, int numArrays, CswArrayValue arrayValues[numArrays], int arraySize) {
     if (arrayValues == NULL)
         arrayValues = malloc(numArrays * sizeof(CswArrayValue));
-    for(int i = 0; i < numArrays; i++) {
+    for (int i = 0; i < numArrays; i++) {
         arrayValues[i].values = values + i;
         arrayValues[i].numValues = arraySize;
     }
@@ -282,7 +352,7 @@ static cbor_item_t *_makeEqCoordItem(CswEqCoord value) {
     return valueMap;
 }
 
-static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
+static cbor_item_t *_makeSolarSystemCoordItem(CswSolarSystemCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(3);
     cbor_map_add(valueMap, _cswMakeStringPair("_type", "SolarSystemCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
@@ -291,7 +361,7 @@ static cbor_item_t *_makeSolarSystemCoordItem( CswSolarSystemCoord value) {
     return valueMap;
 }
 
-static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
+static cbor_item_t *_makeMinorPlanetCoordItem(CswMinorPlanetCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(9);
     cbor_map_add(valueMap, _cswMakeStringPair("_type", "MinorPlanetCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
@@ -306,7 +376,7 @@ static cbor_item_t *_makeMinorPlanetCoordItem( CswMinorPlanetCoord value) {
     return valueMap;
 }
 
-static cbor_item_t *_makeCometCoordItem( CswCometCoord value) {
+static cbor_item_t *_makeCometCoordItem(CswCometCoord value) {
     cbor_item_t *valueMap = cbor_new_definite_map(8);
     cbor_map_add(valueMap, _cswMakeStringPair("_type", "CometCoord"));
     cbor_map_add(valueMap, _cswMakeStringPair("tag", value.tag.name));
@@ -385,46 +455,46 @@ CswTaiTime cswMakeTaiTime(long seconds, int nanos) {
 static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, int index) {
     switch (keyType) {
         case UTCTimeKey:
-            return _cswUtcTimeAsMap(((CswUtcTime*)values)[index]);
+            return _cswUtcTimeAsMap(((CswUtcTime *) values)[index]);
         case TAITimeKey:
-            return _cswTaiTimeAsMap(((CswTaiTime*)values)[index]);
+            return _cswTaiTimeAsMap(((CswTaiTime *) values)[index]);
         case ChoiceKey:
             // TODO: test this
         case StringKey:
             return _makeStringItem(values + index);
         case StructKey:
-            return _makeStructItem(((CswParamSet*)values)[index]);
+            return _makeStructItem(((CswParamSet *) values)[index]);
         case RaDecKey:
             return NULL; // TODO: FIXME
         case EqCoordKey:
-            return _makeEqCoordItem(((CswEqCoord*)values)[index]);
+            return _makeEqCoordItem(((CswEqCoord *) values)[index]);
         case SolarSystemCoordKey:
-            return _makeSolarSystemCoordItem(((CswSolarSystemCoord*)values)[index]);
+            return _makeSolarSystemCoordItem(((CswSolarSystemCoord *) values)[index]);
         case MinorPlanetCoordKey:
-            return _makeMinorPlanetCoordItem(((CswMinorPlanetCoord*)values)[index]);
+            return _makeMinorPlanetCoordItem(((CswMinorPlanetCoord *) values)[index]);
         case CometCoordKey:
-            return _makeCometCoordItem(((CswCometCoord*)values)[index]);
+            return _makeCometCoordItem(((CswCometCoord *) values)[index]);
         case AltAzCoordKey:
-            return _makeAltAzCoordItem(((CswAltAzCoord*)values)[index]);
+            return _makeAltAzCoordItem(((CswAltAzCoord *) values)[index]);
         case CoordKey:
-            return _makeCoordItem(((CswCoord*)values)[index]);
+            return _makeCoordItem(((CswCoord *) values)[index]);
         case BooleanKey:
-            return _makeBooleanItem(((bool*)values)[index]);
+            return _makeBooleanItem(((bool *) values)[index]);
         case CharKey:
-            return _makeCharItem(((char*)values)[index]);
+            return _makeCharItem(((char *) values)[index]);
         case ByteKey:
             // XXX TODO FIXME: Need to use bytestring format here
-            return _makeCharItem(((char*)values)[index]);
+            return _makeCharItem(((char *) values)[index]);
         case ShortKey:
-            return _makeShortItem(((short*)values)[index]);
+            return _makeShortItem(((short *) values)[index]);
         case LongKey:
-            return _makeLongItem(((long*)values)[index]);
+            return _makeLongItem(((long *) values)[index]);
         case IntKey:
-            return _makeIntItem(((int*)values)[index]);
+            return _makeIntItem(((int *) values)[index]);
         case FloatKey:
-            return _makeFloatItem(((float*)values)[index]);
+            return _makeFloatItem(((float *) values)[index]);
         case DoubleKey:
-            return _makeDoubleItem(((double*)values)[index]);
+            return _makeDoubleItem(((double *) values)[index]);
         case ByteArrayKey: {
             // TODO: Test this
 //            return _makeArrayItem(ByteKey, (CswArrayValue *) values);
@@ -476,7 +546,7 @@ static cbor_item_t *_paramAsMap(CswParameter param) {
     cbor_item_t *map = cbor_new_definite_map(3);
     cbor_map_add(map, _cswMakeStringPair("keyName", param.keyName));
     cbor_map_add(map, _cswMakeItemPair("values", _paramValuesAsMap(param)));
-    cbor_map_add(map, _cswMakeStringPair("units", param.units));
+    cbor_map_add(map, _cswMakeStringPair("units", _unitNames[param.units]));
     return map;
 }
 
