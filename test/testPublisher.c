@@ -6,6 +6,8 @@
 #include <libgen.h>
 #include <zconf.h>
 #include <stdlib.h>
+#include <time.h>
+
 #include "csw/csw.h"
 
 /*
@@ -32,6 +34,34 @@ static void publishSimpleEvent(CswEventServiceContext publisher) {
     CswParameter params[] = {param};
     CswParamSet paramSet = {.params = params, .numParams = 1};
     CswEvent event = cswMakeEvent(SystemEvent, prefix, "SimpleDoubleEvent", paramSet);
+    cswEventPublish(publisher, event);
+    cswFreeEvent(event);
+}
+
+// Tests publishing a simple event containing a UTCTime parameter
+static void publishUtcTimeEvent(CswEventServiceContext publisher) {
+//    CswUtcTime ar[] = {cswUtcTime()};
+    // Use fixed date so that test comparison works
+    CswUtcTime ar[] = {cswMakeUtcTime(1625066893, 372333847)};
+    CswArrayValue values = {.values = ar, .numValues = 1};
+    CswParameter param = cswMakeParameter("utcTimeValue", UTCTimeKey, values, "NoUnits");
+    CswParameter params[] = {param};
+    CswParamSet paramSet = {.params = params, .numParams = 1};
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "UtcTimeEvent", paramSet);
+    cswEventPublish(publisher, event);
+    cswFreeEvent(event);
+}
+
+// Tests publishing a simple event containing a UTCTime parameter
+static void publishTaiTimeEvent(CswEventServiceContext publisher) {
+//    CswTaiTime ar[] = {cswTaiTime()};
+    // Use fixed date so that test comparison works
+    CswTaiTime ar[] = {cswMakeTaiTime(1625066980, 763689367)};
+    CswArrayValue values = {.values = ar, .numValues = 1};
+    CswParameter param = cswMakeParameter("taiTimeValue", TAITimeKey, values, "NoUnits");
+    CswParameter params[] = {param};
+    CswParamSet paramSet = {.params = params, .numParams = 1};
+    CswEvent event = cswMakeEvent(SystemEvent, prefix, "TaiTimeEvent", paramSet);
     cswEventPublish(publisher, event);
     cswFreeEvent(event);
 }
@@ -297,6 +327,9 @@ int main(int argc, char **argv) {
 
     publishSimpleEvent(publisher);
 
+    publishUtcTimeEvent(publisher);
+    publishTaiTimeEvent(publisher);
+
     publishInts(publisher);
     publishDoubles(publisher);
 
@@ -314,6 +347,7 @@ int main(int argc, char **argv) {
     char *dir = dirname(argv[0]);
     char cmd[PATH_MAX];
     sprintf(cmd, "cmp %s/TestAssemblyHandlers.out /tmp/TestAssemblyHandlers.out", dir);
+    printf("%s\n", cmd);
     int status = system(cmd);
     if (status == 0)
         printf("All tests passed.\n");
@@ -322,3 +356,4 @@ int main(int argc, char **argv) {
 
     return status;
 }
+

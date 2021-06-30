@@ -4,6 +4,8 @@
 
 #include <string.h>
 #include <cbor.h>
+#include <time.h>
+
 #include "csw.h"
 #include "cswImpl.h"
 
@@ -343,13 +345,51 @@ static cbor_item_t *_makeCoordItem(CswCoord value) {
     }
 }
 
+// Returns a CBOR map for the given UTC time argument
+cbor_item_t *_cswUtcTimeAsMap(CswUtcTime t) {
+    return _cswEventTimeAsMap(t);
+}
+
+// Returns a CBOR map for the given TAI time argument
+cbor_item_t *_cswTaiTimeAsMap(CswTaiTime t) {
+    return _cswEventTimeAsMap(t);
+}
+
+/**
+ * Returns an instance containing the current UTC time
+ */
+CswUtcTime cswUtcTime() {
+    // Same as event time
+    return cswEventTime();
+}
+
+CswUtcTime cswMakeUtcTime(long seconds, int nanos) {
+    return cswMakeEventTime(seconds, nanos);
+}
+
+/**
+ * Returns an instance containing the current TAI time
+ */
+CswUtcTime cswTaiTime() {
+    struct timespec tp;
+    clock_gettime(CLOCK_TAI, &tp);
+    CswEventTime result = {.seconds = tp.tv_sec, .nanos = tp.tv_nsec};
+    return result;
+}
+
+CswTaiTime cswMakeTaiTime(long seconds, int nanos) {
+    return cswMakeEventTime(seconds, nanos);
+}
 
 // Returns a cbor item for the parameter value at the given index
 static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, int index) {
     switch (keyType) {
-        case ChoiceKey:
         case UTCTimeKey:
+            return _cswUtcTimeAsMap(((CswUtcTime*)values)[index]);
         case TAITimeKey:
+            return _cswTaiTimeAsMap(((CswTaiTime*)values)[index]);
+        case ChoiceKey:
+            // TODO: test this
         case StringKey:
             return _makeStringItem(values + index);
         case StructKey:

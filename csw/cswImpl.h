@@ -1,3 +1,5 @@
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "bugprone-reserved-identifier"
 //
 // Created by abrighto on 8/6/19.
 //
@@ -27,6 +29,9 @@ CswEventTime _cswEventTimeFromMap(cbor_item_t* map);
 // --- Parameters ---
 
 cbor_item_t *_cswParameterAsMap(CswParameter param);
+cbor_item_t *_cswUtcTimeAsMap(CswUtcTime t);
+cbor_item_t *_cswTaiTimeAsMap(CswTaiTime t);
+
 struct cbor_pair _cswMakeStringPair(const char *key, const char *value);
 struct cbor_pair _cswMakeItemPair(const char *key, cbor_item_t *value);
 struct cbor_pair _cswMakeParamSetItemPair(const CswParameter* paramSet, int numParams);
@@ -88,3 +93,5 @@ CswRedisConnectorGetResult cswRedisConnectorGet(redisContext* context, const cha
 
 
 #endif //CSW_C_CSWIMPL_H
+
+#pragma clang diagnostic pop

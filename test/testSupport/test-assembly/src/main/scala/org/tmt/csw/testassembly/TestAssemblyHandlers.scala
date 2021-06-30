@@ -28,6 +28,8 @@ object TestAssemblyHandlers {
   private val prefix = Prefix(CSW, "TestPublisher")
   private val eventNames = List(
     "SimpleDoubleEvent",
+    "UtcTimeEvent",
+    "TaiTimeEvent",
     "IntArrayMatrixEvent",
     "DoubleArrayMatrtixEvent",
     "AltAzCoordEvent",

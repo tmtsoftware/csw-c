@@ -46,9 +46,7 @@ void cswFreeEvent(CswEvent event) {
 cbor_item_t *cswEventAsMap(CswEvent event) {
     cbor_item_t *valueMap = cbor_new_definite_map(6);
 
-    char* eventType = "SystemEvent";
-    if (event.eventType == ObserveEvent)
-        eventType = "ObserveEvent";
+    char* eventType = (event.eventType == ObserveEvent) ? "ObserveEvent" : "SystemEvent";
 
     cbor_map_add(valueMap, _cswMakeStringPair("_type", eventType));
     cbor_map_add(valueMap, _cswMakeStringPair("source", event.source));
