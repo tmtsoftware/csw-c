@@ -20,7 +20,7 @@ See [here](https://www.scala-sbt.org/1.0/docs/Setup.html) for instructions on in
 
 The CSW services need to be running before starting the components. 
 This is done by running `csw-services start`.
-See [here](https://tmtsoftware.github.io/csw/3.0.1/apps/cswservices.html) for how to install csw-services.
+See [here](https://tmtsoftware.github.io/csw//apps/cswservices.html) for how to install csw-services.
 
 ## Building the HCD and Assembly Applications
 

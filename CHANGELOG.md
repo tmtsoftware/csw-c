@@ -1,7 +1,11 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [csw-c v4.0.0] - 
+
 ### Changed
+
+- Updated CSW version to 4.0.0
 
 - Changed type of units argument for a CSW Parameter to an Enum
 
