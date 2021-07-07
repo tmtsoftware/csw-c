@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 
 - Updated CSW version to 4.0.0
 
+- Shared libcsw.so.1 is installed (was previously static libcsw.a)
+
 - Changed type of units argument for a CSW Parameter to an Enum
 
 - Added support for UTCTime and TAITime parameters
