@@ -1,5 +1,6 @@
 project(csw LANGUAGES C VERSION 0.1)
-set(CMAKE_C_STANDARD 17)
+cmake_minimum_required(VERSION 3.19)
+set(CMAKE_C_STANDARD 11)
 
 find_package(hiredis REQUIRED)
 find_package(cbor REQUIRED)

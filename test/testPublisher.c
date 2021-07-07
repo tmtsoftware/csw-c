@@ -32,11 +32,11 @@ static void publishSimpleEvent(CswEventServiceContext publisher) {
     CswArrayValue values1 = {.values = ar1, .numValues = 3};
     CswParameter param1 = cswMakeParameter("DoubleValue", DoubleKey, values1, csw_unit_arcmin);
 
-    char* ar2 = {"one"};
-    CswArrayValue values2 = {.values = ar2, .numValues = 1};
+    const char* ar2[] = {"one", "two"};
+    CswArrayValue values2 = {.values = ar2, .numValues = 2};
     CswParameter param2 = cswMakeParameter("StringValue", StringKey, values2, csw_unit_NoUnits);
 
-    char* ar3 = {"choice1"};
+    const char* ar3[] = {"choice1"};
     CswArrayValue values3 = {.values = ar3, .numValues = 1};
     CswParameter param3 = cswMakeParameter("ChoiceValue", ChoiceKey, values3, csw_unit_NoUnits);
 

@@ -461,7 +461,7 @@ static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, in
         case ChoiceKey:
             // TODO: test this
         case StringKey:
-            return _makeStringItem(values + index);
+            return _makeStringItem(((char**)values)[index]);
         case StructKey:
             return _makeStructItem(((CswParamSet *) values)[index]);
         case RaDecKey:

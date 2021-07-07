@@ -16,7 +16,7 @@ import csw.params.core.models.Id
 import csw.params.events.{Event, EventKey, EventName, SystemEvent}
 import csw.params.core.formats.ParamCodecs._
 
-import scala.concurrent.{ExecutionContextExecutor, Future}
+import scala.concurrent.ExecutionContextExecutor
 import TestAssemblyHandlers._
 import csw.prefix.models.Prefix
 import csw.prefix.models.Subsystem.CSW
