@@ -1,10 +1,8 @@
-//
-// Created by abrighto on 8/6/19.
-//
+#pragma once
 
-#ifndef CSW_C_CSW_H
-#define CSW_C_CSW_H
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // --- Parameters ---
 
@@ -397,4 +395,6 @@ CswCometCoord cswMakeCometCoord(const char *tag, double epochOfPerihelion, long 
 
 CswAltAzCoord cswMakeAltAzCoord(const char *tag, long altInUas, long azInUas);
 
-#endif //CSW_C_CSW_H
+#ifdef __cplusplus
+}
+#endif

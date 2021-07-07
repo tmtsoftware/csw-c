@@ -1,33 +1,26 @@
-
-set(sources Event.c RedisConnector.c Parameter.c EventTime.c EventPublisher.c)
-
-add_library(csw STATIC ${sources} Coords.c)
-add_library(csw-shared SHARED ${sources})
+project(csw LANGUAGES C VERSION 0.1)
+set(CMAKE_C_STANDARD 17)
 
 find_package(hiredis REQUIRED)
-#find_package(ev REQUIRED)
 find_package(cbor REQUIRED)
+find_package(uuid REQUIRED)
 
-#include_directories( ${HIREDIS_INCLUDE_DIRS}  ${EV_INCLUDE_DIRS}  ${CBOR_INCLUDE_DIRS} )
 include_directories( ${HIREDIS_INCLUDE_DIRS}  ${CBOR_INCLUDE_DIRS} )
 
-set_target_properties(csw PROPERTIES
-        PUBLIC_HEADER csw.h
-        VERSION 1.0.0)
+set(sources Event.c RedisConnector.c Parameter.c EventTime.c EventPublisher.c Coords.c)
 
-set_target_properties(csw-shared PROPERTIES
+add_library(${PROJECT_NAME} SHARED ${sources})
+target_link_libraries(${PROJECT_NAME} hiredis cbor uuid)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
         PUBLIC_HEADER csw.h
         SOVERSION 1)
 
 include(GNUInstallDirs)
 
-install(TARGETS csw csw-shared
+install(TARGETS ${PROJECT_NAME}
         PUBLIC_HEADER
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/csw
         )
 
-install(TARGETS csw
-        PUBLIC_HEADER
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/csw
-        )
 

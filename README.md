@@ -59,7 +59,7 @@ You can change the target install directory like this:
 
     make install INSTALL_DIR=$HOME/myDir
 
-This installs the static library libcsw.a and the shared library libcsw-shared.so.
+This installs the shared library libcsw.so.
 
 Other make targets include:
 
