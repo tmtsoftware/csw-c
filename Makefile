@@ -1,11 +1,13 @@
 # Simple wrapper for cmake
 
+# Use "make PREFIX=/my/dir" to change installation location
+PREFIX = /usr/local
+
 BUILD_DIR = build
-INSTALL_DIR = /usr/local
 
 all:
 	test -d $(BUILD_DIR) || mkdir $(BUILD_DIR)
-	(cd $(BUILD_DIR); cmake .. -G "Unix Makefiles"; cmake --build . --verbose)
+	(cd $(BUILD_DIR); cmake .. -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=$(PREFIX); cmake --build . --verbose)
 
 # May require sudo
 install:
@@ -19,4 +21,4 @@ test: all
 
 # May require sudo, actual install dir might be different
 uninstall:
-	rm -f $(INSTALL_DIR)/lib/libcsw.* $(INSTALL_DIR)/include/csw/csw.h
+	rm -f $(PREFIX)/lib/libcsw.* $(PREFIX)/include/csw/csw.h
