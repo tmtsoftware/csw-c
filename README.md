@@ -42,6 +42,15 @@ To build the the library (libcsw) and the example applications, run:
 
     make
 
+or 
+
+    make PREFIX=/my/dir
+
+Default install dir is /usr/local, but that can be changed by adding PREFIX=... to the make command line.
+Install the library with:
+
+    make install
+
 To run the tests:
 
     make test
