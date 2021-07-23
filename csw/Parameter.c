@@ -93,13 +93,13 @@ void cswFreeParameter(CswParameter param) {
 
 // --- KeyTypes ---
 
+// Must correspond exactly to the CswKeyType enum
 static const char *_keyTypeNames[] = {
         "ChoiceKey",
         "StringKey",
         "StructKey",
         "UTCTimeKey",
         "TAITimeKey",
-        "RaDecKey",
         "EqCoordKey",
         "SolarSystemCoordKey",
         "MinorPlanetCoordKey",
@@ -464,8 +464,6 @@ static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, in
             return _makeStringItem(((char**)values)[index]);
         case StructKey:
             return _makeStructItem(((CswParamSet *) values)[index]);
-        case RaDecKey:
-            return NULL; // TODO: FIXME
         case EqCoordKey:
             return _makeEqCoordItem(((CswEqCoord *) values)[index]);
         case SolarSystemCoordKey:

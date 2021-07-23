@@ -12,7 +12,6 @@ typedef enum {
     StructKey,
     UTCTimeKey,
     TAITimeKey,
-    RaDecKey,
     EqCoordKey,
     SolarSystemCoordKey,
     MinorPlanetCoordKey,
@@ -225,6 +224,10 @@ typedef struct CswArrayValue {
     union {
         void *values;
         int *intValues;
+        short *shortValues;
+        float *floatValues;
+        double *doubleValues;
+        char* *stringValues;
         struct CswArrayValue *arrayValues;
         CswCoord *coordValues;
     };
