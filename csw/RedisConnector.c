@@ -52,7 +52,8 @@ redisAsyncContext* cswRedisAsyncInit(void) {
  *
  * @param context the return value from cswRedisInit
  */
-void cswRedisPublisherClose(redisContext* context) {
+void
+cswRedisPublisherClose(redisContext* context) {
     redisFree(context);
 }
 

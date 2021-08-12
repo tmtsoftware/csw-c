@@ -18,6 +18,16 @@ CswEventServiceContext cswEventPublisherInit() {
 }
 
 /**
+ * Closes and frees the CSW event publisher connection.
+ *
+ * @param context the return value from cswEventPublisherInit()
+ */
+void cswEventPublisherClose(CswEventServiceContext context) {
+    cswRedisPublisherClose(context);
+}
+
+
+/**
  * Publishes an event to the Event Service
  *
  * @param context return value from cswEventPublisherInit()
