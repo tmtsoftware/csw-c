@@ -1,4 +1,4 @@
-project(csw LANGUAGES C VERSION 0.1)
+project(csw LANGUAGES C VERSION 4.0.0)
 cmake_minimum_required(VERSION 3.19)
 set(CMAKE_C_STANDARD 11)
 
@@ -15,7 +15,7 @@ target_link_libraries(${PROJECT_NAME} hiredis cbor uuid)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         PUBLIC_HEADER csw.h
-        SOVERSION 4.0.0)
+        SOVERSION ${PROJECT_VERSION})
 
 include(GNUInstallDirs)
 
