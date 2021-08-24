@@ -36,8 +36,7 @@ object TestAssemblyHandlers {
     "CometCoordEvent",
     "MinorPlanetCoordEvent",
     "SolarSystemCoordsEvent",
-    "EqCoordsEvent",
-    "StructEvent"
+    "EqCoordsEvent"
   ).map(EventName)
   private val eventKeys = eventNames.map(EventKey(prefix, _))
 

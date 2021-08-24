@@ -1,15 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
-## [csw-c v4.0.0] - 
+## [csw-c v4.0.0] - 2021-08-24
 
 ### Changed
 
-- Updated CSW version to 4.0.0
+- Updated CSW version to 4.0.0-RC1
+
+- Removed CSW Struct parameter type 
 
 - Shared libcsw.so.1 is installed (was previously static libcsw.a)
 
-- Changed type of units argument for a CSW Parameter to an Enum
+- Changed type of units argument for a CSW Parameter to an Enum matching the CSW unit values
 
 - Added support for UTCTime and TAITime parameters
 

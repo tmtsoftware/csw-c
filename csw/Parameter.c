@@ -97,7 +97,6 @@ void cswFreeParameter(CswParameter param) {
 static const char *_keyTypeNames[] = {
         "ChoiceKey",
         "StringKey",
-        "StructKey",
         "UTCTimeKey",
         "TAITimeKey",
         "EqCoordKey",
@@ -293,12 +292,6 @@ struct cbor_pair _cswMakeParamSetItemPair(const CswParameter *paramSet, int numP
     return _cswMakeItemPair("paramSet", array);
 }
 
-static cbor_item_t *_makeStructItem(CswParamSet value) {
-    cbor_item_t *map = cbor_new_definite_map(1);
-    cbor_map_add(map, _cswMakeParamSetItemPair(value.params, value.numParams));
-    return map;
-}
-
 /**
  * Creates an array of array values for *ArrayKey types.
  *
@@ -462,8 +455,6 @@ static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, in
             // TODO: test this
         case StringKey:
             return _makeStringItem(((char**)values)[index]);
-        case StructKey:
-            return _makeStructItem(((CswParamSet *) values)[index]);
         case EqCoordKey:
             return _makeEqCoordItem(((CswEqCoord *) values)[index]);
         case SolarSystemCoordKey:
@@ -579,8 +570,6 @@ cbor_item_t *_cswParameterAsMap(CswParameter param) {
 //}
 //
 //// Makes an array of CswParameters from the given CBOR Item.
-//// The return type is a CswStruct, since it contains an array or params as well as the length of the array.
-//// Note: Memory for sparamSet.params needs to be freed eventually.
 //CswParamSet _cswGetParamSet(cbor_item_t* item) {
 //    CswParamSet paramSet = {};
 //    paramSet.numParams = cbor_array_size(item);

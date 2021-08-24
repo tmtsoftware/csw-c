@@ -301,36 +301,6 @@ static void publishEqCoords(CswEventServiceContext publisher) {
     cswFreeEvent(event);
 }
 
-static void publishStruct(CswEventServiceContext publisher) {
-    // Double parameter
-    double ar1[] = {1.1, 2.2, 3.3};
-    CswArrayValue values1 = {.values = ar1, .numValues = 3};
-    CswParameter param1 = cswMakeParameter("doubleEventValues", DoubleKey, values1, csw_unit_arcmin);
-
-    // Int parameter
-    int ar2[] = {1, 2, 3};
-    CswArrayValue values2 = {.values = ar2, .numValues = 3};
-    CswParameter param2 = cswMakeParameter("intEventValues", IntKey, values2, csw_unit_arcmin);
-
-    // Struct parameter containing two fields (the two above parameters)
-    CswParameter params1[] = {param1, param2};
-    CswParamSet paramSet1 = {.params = params1, .numParams = 2};
-    CswParamSet ar[] = {paramSet1};
-    CswArrayValue values = {.values = ar, .numValues = 1};
-    CswParameter param = cswMakeParameter("structEventValues", StructKey, values, csw_unit_NoUnits);
-
-    // Param set for the event
-    CswParameter params[] = {param};
-    CswParamSet paramSet = {.params = params, .numParams = 1};
-
-    CswEvent event = cswMakeEvent(SystemEvent, prefix, "StructEvent", paramSet);
-
-    cswEventPublish(publisher, event);
-
-    cswFreeEvent(event);
-}
-
-
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnusedParameter"
 int main(int argc, char **argv) {
@@ -349,8 +319,6 @@ int main(int argc, char **argv) {
     publishMinorPlanetCoord(publisher);
     publishCometCoord(publisher);
     publishAltAzCoord(publisher);
-
-    publishStruct(publisher);
 
     // Give the assembly time to receive the events and write the file
     sleep(3);

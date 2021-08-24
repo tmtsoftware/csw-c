@@ -9,7 +9,6 @@ extern "C" {
 typedef enum {
     ChoiceKey,
     StringKey,
-    StructKey,
     UTCTimeKey,
     TAITimeKey,
     EqCoordKey,
@@ -253,7 +252,7 @@ typedef struct {
 } CswParameter;
 
 
-// A parameter set (also the type of each values when key is "StructKey").
+// A parameter set.
 typedef struct {
     // a list of Parameters
     CswParameter *params;
