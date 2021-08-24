@@ -15,7 +15,7 @@ target_link_libraries(${PROJECT_NAME} hiredis cbor uuid)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         PUBLIC_HEADER csw.h
-        SOVERSION 1)
+        SOVERSION 4.0.0)
 
 include(GNUInstallDirs)
 
