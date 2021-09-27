@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
+- Updated CSW version to 4.0.0
+- 
+### Added
+
+- Added a dependency on the [zlog](https://github.com/HardySimpson/zlog) logging library and replaced printf() with log messages
+  Note that your application's main() must initialize the zlog library at startup.
+  See the [zlog API](https://hardysimpson.github.io/zlog/UsersGuide-EN.html#sec:dzlog-API) for details.
 
 ## [csw-c v4.0.0] - 2021-08-24
 

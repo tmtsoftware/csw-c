@@ -6,6 +6,8 @@
 #include <libgen.h>
 #include <zconf.h>
 #include <stdlib.h>
+#include "zlog.h"
+
 
 #include "csw/csw.h"
 
@@ -304,6 +306,13 @@ static void publishEqCoords(CswEventServiceContext publisher) {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnusedParameter"
 int main(int argc, char **argv) {
+    int rc = dzlog_init("test_default.conf", "my_cat");
+    if (rc) {
+        printf("zlog init failed\n");
+        return -1;
+    }
+    dzlog_info("Logging initialized");
+
     CswEventServiceContext publisher = cswEventPublisherInit();
 
     publishSimpleEvent(publisher);
@@ -326,13 +335,14 @@ int main(int argc, char **argv) {
     char *dir = dirname(argv[0]);
     char cmd[PATH_MAX];
     sprintf(cmd, "cmp %s/TestAssemblyHandlers.out /tmp/TestAssemblyHandlers.out", dir);
-    printf("%s\n", cmd);
+    dzlog_info("%s\n", cmd);
     int status = system(cmd);
     if (status == 0)
-        printf("All tests passed.\n");
+        dzlog_info("All tests passed.\n");
     else
-        printf("Test Failed\n");
+        dzlog_error("Test Failed\n");
 
+    zlog_fini();
     return status;
 }
 #pragma clang diagnostic pop

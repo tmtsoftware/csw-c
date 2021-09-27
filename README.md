@@ -32,7 +32,11 @@ install them from the source code. The makefiles will look for them in the stand
 * libuuid, libuuid-devel (Fedora), uuid-dev (Ubuntu)
 * hiredis, hiredis-devel (Fedora), libhiredis-dev (Ubuntu)
 
-<!--* libev, libev-devel  (Not currently needed: Will be needed if event subscription is implemented)-->
+### Logging
+The CSW standard logging library for C is [zlog](https://github.com/HardySimpson/zlog), which needs to be installed
+from the source (by default also in /usr/local). 
+Note that your application's main() must initialize the zlog library at startup.
+See the [zlog API](https://hardysimpson.github.io/zlog/UsersGuide-EN.html#sec:dzlog-API) for details.
 
 * Note: For CentOS-7 you need to install cmake-3.14 and libcbor manually.
 
@@ -43,11 +47,8 @@ install them from the source code. The makefiles will look for them in the stand
     brew install hiredis
     brew install ossp-uuid
 ```
-<!--    brew install libev   (Not currently needed: Will be needed if event subscription is implemented)-->
-
 
 ## Building and Installing
-
 
 To build the the library (libcsw) and the example applications, run:
 
