@@ -100,6 +100,10 @@ typedef enum {
     csw_unit_encoder, // "enc", "encoder counts"
     csw_unit_count, // "ct", "counts as for an encoder or detector"
     csw_unit_pix,  // "pix", "pixel"
+
+    // Datetime units
+    csw_unit_tai, // "tai", "TAI time unit"
+    csw_unit_utc  // "utc", "UTC time unit"
 } CswUnits;
 
 

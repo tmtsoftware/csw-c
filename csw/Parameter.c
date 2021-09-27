@@ -69,6 +69,10 @@ static char *_unitNames[] = {
         "encoder",
         "count",
         "pix",
+
+        // Datetime units
+        "tai",
+        "utc"
 };
 
 /**
