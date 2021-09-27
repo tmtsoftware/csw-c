@@ -16,8 +16,6 @@ from the top level directory. To run the tests manually:
 
     `csw-services start`
 
-    to start only the event service.
-
 * Then start the test assembly:
 ```shell script
     cd testSupport
