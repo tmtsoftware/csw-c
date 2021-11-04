@@ -17,7 +17,7 @@ clean:
 	rm -rf $(BUILD_DIR)
 
 test: all
-	(cd test; runTests.sh)
+	(cd test; ./runTests.sh)
 
 # May require sudo, actual install dir might be different
 uninstall:
