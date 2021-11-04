@@ -434,6 +434,11 @@ CswUtcTime cswMakeUtcTime(long seconds, int nanos) {
     return cswMakeEventTime(seconds, nanos);
 }
 
+// Missing on MacOS
+#ifndef CLOCK_TAI
+#define CLOCK_TAI 11
+#endif
+
 /**
  * Returns an instance containing the current TAI time
  */

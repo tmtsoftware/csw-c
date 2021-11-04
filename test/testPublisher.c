@@ -333,7 +333,7 @@ int main(int argc, char **argv) {
     sleep(3);
 
     char *dir = dirname(argv[0]);
-    char cmd[PATH_MAX];
+    char cmd[1024];
     sprintf(cmd, "cmp %s/TestAssemblyHandlers.out /tmp/TestAssemblyHandlers.out", dir);
     dzlog_info("%s\n", cmd);
     int status = system(cmd);

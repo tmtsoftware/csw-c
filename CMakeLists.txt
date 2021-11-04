@@ -4,6 +4,9 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set( CMAKE_VERBOSE_MAKEFILE on )
 
+include_directories("/usr/local/include")
+link_directories("/usr/local/lib")
+
 set(DEFAULT_BUILD_TYPE "Debug")
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)

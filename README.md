@@ -46,6 +46,7 @@ See the [zlog API](https://hardysimpson.github.io/zlog/UsersGuide-EN.html#sec:dz
     brew install libcbor
     brew install hiredis
     brew install ossp-uuid
+    brew install zlog
 ```
 
 ## Building and Installing
