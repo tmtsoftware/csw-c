@@ -7,7 +7,7 @@ set( CMAKE_VERBOSE_MAKEFILE on )
 include_directories("/usr/local/include")
 link_directories("/usr/local/lib")
 
-set(DEFAULT_BUILD_TYPE "Debug")
+set(DEFAULT_BUILD_TYPE "Release")
 
 if (NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     message(STATUS "Setting build type to '${DEFAULT_BUILD_TYPE}' as none was specified.")
