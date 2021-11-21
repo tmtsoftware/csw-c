@@ -32,6 +32,14 @@ install them from the source code. The makefiles will look for them in the stand
 * libuuid, libuuid-devel (Fedora), uuid-dev (Ubuntu)
 * hiredis, hiredis-devel (Fedora), libhiredis-dev (Ubuntu)
 
+## Making a release dir: install.sh
+
+The install.sh script creates an OS specific directory with all of the native dependencies.
+It assumes that the native shared libs for csw-c are already installed in /usr/local/lib
+and copies them to install/csw-c/lib/`uname`, where `uname` is Darwin for MacOS, or Linux.
+
+This was tested on Ubuntu-21.04 and MacOS-12.
+
 ### Logging
 The CSW standard logging library for C is [zlog](https://github.com/HardySimpson/zlog), which needs to be installed
 from the source (by default also in /usr/local). 
