@@ -7,6 +7,8 @@ Subscribing to events is not yet implemented.
 The binary release also contains the header files and shared library dependencies for Linux and MacOS
 (This was generated and tested on Ubuntu-21.04 and MacOS-12 only.)
 
+Note: You will need to set the LD_LIBRARY_PATH environment variable to include the location of the shared libraries.
+
 ## Version compatibility
 
 | csw-c | csw |
