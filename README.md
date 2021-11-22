@@ -31,6 +31,7 @@ install them from the source code. The makefiles will look for them in the stand
 * libcbor, libcbor-devel (for Fedora, CentOS) or libcbor-dev (for Ubuntu)
 * libuuid, libuuid-devel (Fedora), uuid-dev (Ubuntu)
 * hiredis, hiredis-devel (Fedora), libhiredis-dev (Ubuntu)
+* zlog (from source on Linux, brew on Mac)
 
 ## Making a release dir: install.sh
 
