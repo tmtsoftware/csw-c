@@ -1,6 +1,17 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [csw-c v4.0.2] - 2021-11-22
+
+### Changed
+
+- Minor changes to build environment
+- Tested on MacOS-12
+- 
+### Added
+
+- Add install.sh script that makes a binary release with native dependencies
+
 ## [csw-c v4.0.1] - 2021-09-27
 
 ### Changed

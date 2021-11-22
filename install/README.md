@@ -13,6 +13,7 @@ Note: You will need to set the LD_LIBRARY_PATH environment variable to include t
 
 | csw-c | csw |
 |--------|------|
+| v4.0.2 | v4.0.0 |
 | v4.0.1 | v4.0.0 |
 | v4.0.0 | v4.0.0-RC1 |
 | v3.0.1 | v3.0.1 |
