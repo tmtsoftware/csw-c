@@ -2,6 +2,8 @@ project(csw LANGUAGES C VERSION 4.0.2)
 cmake_minimum_required(VERSION 3.19)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 find_package(hiredis REQUIRED)
 find_package(zlog REQUIRED)
@@ -13,7 +15,8 @@ include_directories( ${ZLOG_INCLUDE_DIRS} ${HIREDIS_INCLUDE_DIRS}  ${CBOR_INCLUD
 set(sources Event.c RedisConnector.c Parameter.c EventTime.c EventPublisher.c Coords.c)
 
 add_library(${PROJECT_NAME} SHARED ${sources})
-target_link_libraries(${PROJECT_NAME} hiredis zlog cbor uuid)
+target_link_libraries(${PROJECT_NAME} hiredis zlog cbor uuid
+        Threads::Threads)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
         PUBLIC_HEADER csw.h
