@@ -4,8 +4,9 @@
 
 #include <stdio.h>
 #include <libgen.h>
-#include <zconf.h>
+//#include <zconf.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "zlog.h"
 
 
