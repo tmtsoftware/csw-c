@@ -19,6 +19,7 @@
  * @return context used for subsequent calls
  */
 redisContext *cswRedisInit(void) {
+    printf("csw-c: Connecting to Redis on localhost, port 6379\n");
     redisContext *result = redisConnect("127.0.0.1", 6379);
     if (result == NULL || result->err) {
         if (result) {

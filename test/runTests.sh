@@ -3,8 +3,8 @@
 # Script that starts the CSW services, compiles and runs the test assembly and then runs the python tests.
 # Assumes that cs, sbt, pytest are all in your shell path.
 
-CSW_VERSION=4.0.0
-#CSW_VERSION=87d677d5ad39b6781619f1f866c90ee6ec448c5b
+CSW_VERSION=4.0.1-RC1
+#CSW_VERSION=a9073713d8b5de90a817e08b31629a7176e1b4fe
 
 logfile=test.log
 if ! hash cs 2>/dev/null ; then

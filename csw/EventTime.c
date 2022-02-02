@@ -36,7 +36,7 @@ cbor_item_t *_cswEventTimeAsMap(CswEventTime et) {
     cbor_map_add(map,
                  (struct cbor_pair) {
                          .key = cbor_move(cbor_build_string("nanos")),
-                         .value = cbor_move(cbor_build_uint32(et.nanos))});
+                         .value = cbor_move(cbor_build_uint64(et.nanos))});
     return map;
 }
 
