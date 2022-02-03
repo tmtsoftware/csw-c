@@ -10,6 +10,11 @@
 
 #include "cswImpl.h"
 
+// Prints and logs an error message
+static void errorMessage(const char* fmt, const char* s) {
+    printf(fmt, s);
+    dzlog_error(fmt, s);
+}
 
 // --- Manage communication with Redis ---
 
@@ -23,9 +28,9 @@ redisContext *cswRedisInit(void) {
     redisContext *result = redisConnect("127.0.0.1", 6379);
     if (result == NULL || result->err) {
         if (result) {
-            dzlog_error("Redis Error: %s\n", result->errstr);
+            errorMessage("Redis Error: %s\n", result->errstr);
         } else {
-            dzlog_error("Redis Error: Can't allocate redis context\n");
+            errorMessage("Redis Error: Can't allocate redis context\n", "");
         }
     }
     return result;
@@ -40,9 +45,9 @@ redisAsyncContext *cswRedisAsyncInit(void) {
     redisAsyncContext *result = redisAsyncConnect("127.0.0.1", 6379);
     if (result == NULL || result->err) {
         if (result) {
-            dzlog_error("Redis Error: %s\n", result->errstr);
+            errorMessage("Redis Error: %s\n", result->errstr);
         } else {
-            dzlog_error("Redis Error: Can't allocate async redis context\n");
+            errorMessage("Redis Error: Can't allocate async redis context\n", "");
         }
     }
     return result;
@@ -93,7 +98,7 @@ static int _getTotalSize(const char **keyList, int numKeys) {
 static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *privateData) {
     redisReply *reply = r;
     if (reply == NULL) {
-        dzlog_error("Redis subscribe callback with null message\n");
+        errorMessage("Redis subscribe callback with null message\n", "");
         return;
     }
     if (reply->type == REDIS_REPLY_ARRAY && reply->elements == 3) {
@@ -130,7 +135,7 @@ CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(redisAsyncContext *con
     callbackData->privateData = privateData;
     int result = redisAsyncCommand(context, _subscribeCallback, callbackData, "subscribe %s", keys);
     if (result != REDIS_OK) {
-        dzlog_error("Redis SUBSCRIBE Error: %s\n", context->errstr);
+        errorMessage("Redis SUBSCRIBE Error: %s\n", context->errstr);
         free(callbackData);
         return NULL;
     } else {
@@ -141,7 +146,7 @@ CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(redisAsyncContext *con
 static void _unsubscribeCallback(redisAsyncContext *context, void *r, void *privateData) {
     redisReply *reply = r;
     if (reply == NULL) {
-        dzlog_error("Redis UNSUBSCRIBE Error: %s\n", context->errstr);
+        errorMessage("Redis UNSUBSCRIBE Error: %s\n", context->errstr);
         return;
     }
 }
@@ -165,7 +170,7 @@ int redisConnectorUnsubscribe(redisAsyncContext *context, const char **keyList, 
     //int redisAsyncCommand(redisAsyncContext *ac, redisCallbackFn *fn, void *privdata, const char *format, ...);
     int result = redisAsyncCommand(context, _unsubscribeCallback, NULL, "unsubscribe %s", keys);
     if (result != REDIS_OK) {
-        dzlog_error("Redis UNSUBSCRIBE Error: %s\n", context->errstr);
+        errorMessage("Redis UNSUBSCRIBE Error: %s\n", context->errstr);
     }
     return result;
 }
@@ -185,13 +190,13 @@ int cswRedisConnectorPublish(redisContext *context, const char *key, const unsig
     redisReply *reply2 = redisCommand(context, "publish %s %b", key, encodedValue, length);
     int status = 0;
     if (reply1 == NULL) {
-        dzlog_error("Redis SET Error: %s\n", context->errstr);
+        errorMessage("Redis SET Error: %s\n", context->errstr);
         status++;
     } else {
         freeReplyObject(reply1);
     }
     if (reply2 == NULL) {
-        dzlog_error("Redis PUBLISH Error: %s\n", context->errstr);
+        errorMessage("Redis PUBLISH Error: %s\n", context->errstr);
         status++;
     } else {
         freeReplyObject(reply2);
@@ -209,7 +214,7 @@ int cswRedisConnectorPublish(redisContext *context, const char *key, const unsig
 CswRedisConnectorGetResult cswRedisConnectorGet(redisContext *context, const char *key) {
     redisReply *reply = redisCommand(context, "GET %s", key);
     if (reply == NULL) {
-        dzlog_error("Redis Error: %s\n", context->errstr);
+        errorMessage("Redis Error: %s\n", context->errstr);
         CswRedisConnectorGetResult result = {.errorMsg = context->errstr};
         return result;
     } else {
