@@ -5,14 +5,15 @@ Subscribing to events is not yet implemented.
 
 ## Version compatibility
 
-| csw-c | csw |
-|--------|------|
-| v4.0.2 | v4.0.0 |
-| v4.0.1 | v4.0.0 |
-| v4.0.0 | v4.0.0-RC1 |
-| v3.0.1 | v3.0.1 |
-| v3.0.1-M1 | v3.0.1-M1 |
-| v2.0.0 | v2.0.0 |
+| csw-c     | csw        |
+|-----------|------------|
+| v4.0.3    | v4.0.1     |
+| v4.0.2    | v4.0.0     |
+| v4.0.1    | v4.0.0     |
+| v4.0.0    | v4.0.0-RC1 |
+| v3.0.1    | v3.0.1     |
+| v3.0.1-M1 | v3.0.1-M1  |
+| v2.0.0    | v2.0.0     |
 
 
 Note that this library does not yet use the location service or the redis sentinel (cluster).
