@@ -4,8 +4,8 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set( CMAKE_VERBOSE_MAKEFILE on )
 
-include_directories("/usr/local/include")
-link_directories("/usr/local/lib")
+include_directories("/usr/local/include" "/opt/homebrew/include")
+link_directories("/usr/local/lib" "/opt/homebrew/lib")
 
 set(DEFAULT_BUILD_TYPE "Release")
 
