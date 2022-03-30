@@ -1,6 +1,6 @@
 import org.scalafmt.sbt.ScalafmtPlugin.autoImport.scalafmtOnCompile
 import sbt.Keys._
-import sbt.{Resolver, url, _}
+import sbt._
 import sbt.plugins.JvmPlugin
 
 object Common extends AutoPlugin {
@@ -10,10 +10,10 @@ object Common extends AutoPlugin {
   override def requires: Plugins = JvmPlugin
 
   override lazy val projectSettings: Seq[Setting[_]] = Seq(
-    organization := "org.tmt",
-    organizationName := "TMT",
+    organization := "com.github.tmtsoftware.csw",
+    organizationName := "Thirty Meter Telescope International Observatory",
     scalaVersion := Libs.ScalaVersion,
-    organizationHomepage := Some(url("http://www.tmt.org")),
+    homepage := Some(url("https://github.com/tmtsoftware/csw")),
 
     dependencyOverrides += AkkaHttp.`akka-http-spray-json`,
 
@@ -26,8 +26,8 @@ object Common extends AutoPlugin {
       "-Xlint",
       "-Ywarn-dead-code",
     ),
-    javacOptions in (Compile, doc) ++= Seq("-Xdoclint:none"),
-    testOptions in Test ++= Seq(
+    Compile / doc / javacOptions ++= Seq("-Xdoclint:none"),
+    Test / testOptions ++= Seq(
       // show full stack traces and test case durations
       Tests.Argument("-oDF"),
       // -v Log "test run started" / "test started" / "test run finished" events on log level "info" instead of "debug".
@@ -37,7 +37,7 @@ object Common extends AutoPlugin {
     resolvers += "jitpack" at "https://jitpack.io",
     version := "0.0.1",
     fork := true,
-    parallelExecution in Test := false,
+    Test / parallelExecution := false,
     autoCompilerPlugins := true,
     if (formatOnCompile) scalafmtOnCompile := true else scalafmtOnCompile := false
   )

@@ -66,7 +66,8 @@ object TestAssemblyHandlers {
           testFd.write(jsonStr2.getBytes)
 
           testFd.close()
-        } else {
+        }
+        else {
           log.warn(s"Event is too old: UTC Now: ${UTCTime.now().value}, Event Time: ${event.eventTime.value}")
         }
       }
@@ -78,7 +79,8 @@ object TestAssemblyHandlers {
           log.info(s"received event: $event")
           try {
             handleEvent(event)
-          } catch {
+          }
+          catch {
             case ex: Exception =>
               log.error(s"Test failed for event $event", ex = ex)
           }

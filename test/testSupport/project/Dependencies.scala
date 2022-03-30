@@ -1,5 +1,3 @@
-import sbt._
-
 object Dependencies {
 
   val TestAssembly = Seq(
