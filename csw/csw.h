@@ -6,6 +6,7 @@ extern "C" {
 
 // --- Parameters ---
 
+// Note: if you update this, also update Parameter.c:_keyTypeNames!
 typedef enum {
     ChoiceKey,
     StringKey,
@@ -40,70 +41,130 @@ typedef enum {
 } CswKeyType;
 
 // CswUnits for parameters
+// Note: If you update this, also update Parameter.c:_unitNames!
 typedef enum {
     // SI units
-    csw_unit_angstrom,  // "Angstrom", "10 -1 nm"
-    csw_unit_arcmin,  // "arcmin", "arc minute; angular measurement"
-    csw_unit_arcsec,  // "arcsec", "arc second: angular measurement"
-    csw_unit_day,  // "d", "day - 24 hours"
-    csw_unit_degree,  // "deg", "degree: agular measurement 1/360 of full rotation"
-    csw_unit_elvolt,  // "eV", "electron volt 1.6022x10-19 J"
-    csw_unit_gram,  // "g", "gram 10-3 kg"
-    csw_unit_hour,  // "h", "hour 3.6x10+3 s"
-    csw_unit_hertz,  // "Hz", "frequency"
-    csw_unit_joule,  // "J", "Joule: energy N m"
-    csw_unit_kelvin,  // "K", "Kelvin: temperature with a null point at absolute zero"
-    csw_unit_kilogram,  // "kg", "kilogram, base unit of mass in SI"
-    csw_unit_kilometer, // "km", "kilometers - 10+3 m"
-    csw_unit_liter,  // "l", "liter, metric unit of volume 10+3 cm+3"
-    csw_unit_meter,  // "m", "meter: base unit of length in SI"
-    csw_unit_marcsec,  // "mas", "milli arc second: angular measurement 10-3 arcsec"
-    csw_unit_millimeter, // "mm", "millimeters - 10-3 m"
-    csw_unit_millisecond, // "ms", "milliseconds - 10-3 s"
-    csw_unit_micron,  // "µm", "micron: alias for micrometer"
-    csw_unit_micrometer, // "µm", "micron: 10-6 m"
-    csw_unit_minute,  // "min", "minute 6x10+1 s"
-    csw_unit_newton,  // "N", "Newton: force"
-    csw_unit_pascal,  // "Pa", "Pascal: pressure"
-    csw_unit_radian,  // "rad", "radian: angular measurement of the ratio between the length of an arc and its radius"
-    csw_unit_second,  // "s", "second: base unit of time in SI"
-    csw_unit_sday,  // "sday", "sidereal day is the time of one rotation of the Earth: 8.6164x10+4 s"
-    csw_unit_steradian, // "sr", "steradian: unit of solid angle in SI - rad+2"
+    csw_unit_angstrom, // "Angstrom", "angstrom"
+    csw_unit_alpha, // "alpha", "alpha: fine structure constant"
+    csw_unit_ampere, // "A", "ampere: unit of electric current"
+    csw_unit_arcmin, // "arcmin", "arc minute; angular measurement"
+    csw_unit_arcsec, // "arcsec", "arc second: angular measurement"
+    csw_unit_bar, // "bar", "bar: metric ton of pressure"
+    csw_unit_candela, // "candela ", "candela(lumen/sr)"
+    csw_unit_day, // "d", "day"
+    csw_unit_degree, // "deg", "degree: angular measurement 1/360 of full rotation"
+    csw_unit_degC, // "degC", "Degree Celsius K"
+    csw_unit_degF, // "degF", "Fahrenheit"
+    csw_unit_elvolt, // "eV", "electron volt"
+    csw_unit_gauss, // "gauss", "gauss"
+    csw_unit_gram, // "g", "gram"
+    csw_unit_hertz, // "Hz", "frequency"
+    csw_unit_henry, // "henry", "Henry"
+    csw_unit_hour, // "h", "hour"
+    csw_unit_joule, // "J", "Joule: energy"
+    csw_unit_kelvin, // "K", "Kelvin: temperature with a null point at absolute zero"
+    csw_unit_kilogram, // "kg", "kilogram, base unit of mass in SI"
+    csw_unit_kilometer, // "km", "kilometers"
+    csw_unit_liter, // "l", "liter, metric unit of volume"
+    csw_unit_lm, // "lm", "lumen"
+    csw_unit_lsun, // "lsun", "solar luminosity"
+    csw_unit_lx, // "lx", "lux(lm/m2)"
+    csw_unit_mas, // "mas", "milli arc second"
+    csw_unit_me, // "me", "me(electron_mass)"
+    csw_unit_meter, // "m", "meter: base unit of length in SI"
     csw_unit_microarcsec, // "µas", "micro arcsec: angular measurement"
-    csw_unit_volt,  // "V", "Volt: electric potential or electromotive force"
-    csw_unit_watt,  // "W", "Watt: power"
-    csw_unit_week,  // "wk", "week - 7 d"
-    csw_unit_year,  // "yr", "year - 3.6525x10+2 d"
+    csw_unit_millimeter, // "mm", "millimeters"
+    csw_unit_millisecond, // "ms", "milliseconds"
+    csw_unit_micron, // "µm", "micron: alias for micrometer"
+    csw_unit_micrometer, // "µm", "micron"
+    csw_unit_minute, // "min", "minute"
+    csw_unit_MJD, // "MJD", "Mod. Julian Date"
+    csw_unit_mol, // "mol", "mole- unit of substance"
+    csw_unit_month, // "month", "Month name or number"
+    csw_unit_mmyy, // "mmyy", "mmyy: Month/Year"
+    csw_unit_mu0, // "mu0", "mu0: magnetic constant"
+    csw_unit_muB, // "muB", "Bohr magneton"
+    csw_unit_nanometer, // "nm", "nanometers"
+    csw_unit_newton, // "N", "Newton: force"
+    csw_unit_ohm, // "ohm", "Ohm"
+    csw_unit_pascal, // "Pa", "Pascal: pressure"
+    csw_unit_pi, // "pi", "pi"
+    csw_unit_pc, // "pc", "parsec"
+    csw_unit_ppm, // "ppm", "part per million"
+    csw_unit_radian, // "rad", "radian: angular measurement of the ratio between the length of an arc and its radius"
+    csw_unit_second, // "s", "second: base unit of time in SI"
+    csw_unit_sday, // "sday", "sidereal day is the time of one rotation of the Earth"
+    csw_unit_steradian, // "sr", "steradian: unit of solid angle in SI"
+    csw_unit_volt, // "V", "Volt: electric potential or electromotive force"
+    csw_unit_watt, // "W", "Watt: power"
+    csw_unit_Wb, // "Wb", "Weber"
+    csw_unit_week, // "wk", "week"
+    csw_unit_year, // "yr", "year"
 
     // CGS units
-    csw_unit_coulomb,  // "C", "coulomb: electric charge"
+    csw_unit_coulomb, // "C", "coulomb: electric charge"
     csw_unit_centimeter, // "cm", "centimeter"
-    csw_unit_erg,  // "erg", "erg: CGS unit of energy"
+    csw_unit_D, // "Debye", "Debye(dipole) A electric dipole moment "
+    csw_unit_dyn, // "dyne", "dyne: Unit of force "
+    csw_unit_erg, // "erg", "erg: CGS unit of energy"
 
     // Astropyhsics units
-    csw_unit_au,  // "AU", "astronomical unit: approximately the mean Earth-Sun distance"
-    csw_unit_jansky,  // "Jy", "Jansky: spectral flux density - 10-26 W/Hz m+2"
-    csw_unit_lightyear, // "lyr", "light year - 9.4607x10+15 m"
-    csw_unit_mag,  // "mag", "stellar magnitude"
+    csw_unit_au, // "AU", "astronomical unit: approximately the mean Earth-Sun distance"
+    csw_unit_a0, // "a0","bohr radius: probable distance between the nucleus and the electron in a hydrogen atom in its ground state"
+    csw_unit_c, // "c", "c: speed of light"
+    csw_unit_cKayser, // "cKayser", "cKayser"
+    csw_unit_crab, // "crab", "Crab: astrophotometrical unit for measurement of the intensity of Astrophysical X-ray sources"
+    csw_unit_damas, // "d:m:s", "damas: degree arcminute arcsecond (sexagesimal angle from degree)"
+    csw_unit_e, // "e", "electron charge"
+    csw_unit_earth, // "earth", "earth (geo) unit"
+    csw_unit_F, // "F", "Farad: F"
+    csw_unit_G, // name = "G", "gravitation constant"
+    csw_unit_geoMass, // "geoMass", "Earth Mass"
+    csw_unit_hm, // "hm", "hour minutes (sexagesimal time from hours)"
+    csw_unit_hms, // "hms", "hour minutes seconds (sexagesimal time from hours)"
+    csw_unit_hhmmss, // "HH:MM:SS", "hour minutes seconds (sexagesimal time)"
+    csw_unit_jansky, // "Jy", "Jansky: spectral flux density "
+    csw_unit_jd, // "jd", "Julian Day"
+    csw_unit_jovmass, // "jovMass", "Jupiter mass"
+    csw_unit_lightyear, // "lyr", "light year"
+    csw_unit_mag, // "mag", "stellar magnitude"
+    csw_unit_mjup, // "Mjup", "Jupiter mass"
+    csw_unit_mp, // "mp", "proton_mass"
+    csw_unit_minsec, // "m:s", "minutes seconds (sexagesimal time from minutes)"
+    csw_unit_msun, // "Msun", "solar mass"
+    csw_unit_photon, // "photon", "photon"
+    csw_unit_rgeo, // "Rgeo", "Earth radius (eq)"
+    csw_unit_rjup, // "Rjup", "Jupiter Radius(eq)"
+    csw_unit_rsun, // "Rsun", "solar radius"
+    csw_unit_rydberg, // "Rydberg", "energy of the photon whose wavenumber is the Rydberg constant"
+    csw_unit_seimens, // "seimens", "Seimens"
+    csw_unit_tesla, // "tesla", "Tesla"
+    csw_unit_u, // "u", "atomic mass unit"
 
     // Imperial units
+    csw_unit_barn, // "barn", "barn: metric unit of area"
     csw_unit_cal, // "cal", "thermochemical calorie: pre-SI metric unit of energy"
-    csw_unit_foot, // "ft", "international foot - 1.2x10+1 inch"
-    csw_unit_inch, // "inch", "international inch - 2.54 cm"
-    csw_unit_pound, // "lb", "international avoirdupois pound - 1.6x10+1 oz"
-    csw_unit_mile, // "mi", "international mile - 5.28x10+3 ft"
+    csw_unit_foot, // "ft", "international foot"
+    csw_unit_inch, // "inch", "international inch"
+    csw_unit_pound, // "lb", "international avoirdupois pound"
+    csw_unit_mile, // "mi", "international mile"
     csw_unit_ounce, // "oz", "international avoirdupois ounce"
-    csw_unit_yard, // "yd", "international yard - 3 ft"
+    csw_unit_yard, // "yd", "international yard"
 
     // Others - engineering
     csw_unit_NoUnits, // "none", "scalar - no units specified"
+    csw_unit_bit, // "bit", "bit: binary value of 0 or 1"
     csw_unit_encoder, // "enc", "encoder counts"
     csw_unit_count, // "ct", "counts as for an encoder or detector"
-    csw_unit_pix,  // "pix", "pixel"
+    csw_unit_mmhg, // "mmHg", "millimetre of mercury is a manometric unit of pressure"
+    csw_unit_percent, // "percent", "percentage"
+    csw_unit_pix, // "pix", "pixel"
 
     // Datetime units
-    csw_unit_tai, // "tai", "TAI time unit"
-    csw_unit_utc  // "utc", "UTC time unit"
+    csw_unit_tai, // "TAI", "TAI time unit"
+    csw_unit_utc, // "UTC", "UTC time unit"
+    csw_unit_date, // "date", "date"
+    csw_unit_datetime  // "datetime", "date/time"
 } CswUnits;
 
 
@@ -131,6 +192,7 @@ typedef struct {
     double pmy;
 } CswProperMotion;
 
+// Note: if you update this, also update Parameter.c:_solarSystemObjectNames!
 typedef enum {
     Mercury,
     Venus,
@@ -230,7 +292,7 @@ typedef struct CswArrayValue {
         short *shortValues;
         float *floatValues;
         double *doubleValues;
-        char* *stringValues;
+        char **stringValues;
         struct CswArrayValue *arrayValues;
         CswCoord *coordValues;
     };

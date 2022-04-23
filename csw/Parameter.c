@@ -11,51 +11,106 @@
 
 // Must correspond to the CswUnits enum type
 static char *_unitNames[] = {
+        // SI units
         "angstrom",
+        "alpha",
+        "ampere",
         "arcmin",
         "arcsec",
+        "bar",
+        "candela",
         "day",
         "degree",
+        "degC",
+        "degF",
         "elvolt",
+        "gauss",
         "gram",
-        "hour",
         "hertz",
+        "henry",
+        "hour",
         "joule",
         "kelvin",
         "kilogram",
         "kilometer",
         "liter",
+        "lm",
+        "lsun",
+        "lx",
+        "mas",
+        "me",
         "meter",
-        "marcsec",
+        "microarcsec",
         "millimeter",
         "millisecond",
         "micron",
         "micrometer",
         "minute",
+        "MJD",
+        "mol",
+        "month",
+        "mmyy",
+        "mu0",
+        "muB",
+        "nanometer",
         "newton",
+        "ohm",
         "pascal",
+        "pi",
+        "pc",
+        "ppm",
         "radian",
         "second",
         "sday",
         "steradian",
-        "microarcsec",
         "volt",
         "watt",
+        "Wb",
         "week",
         "year",
 
         // CGS units
         "coulomb",
         "centimeter",
+        "D",
+        "dyn",
         "erg",
 
         // Astropyhsics units
         "au",
+        "a0",
+        "c",
+        "cKayser",
+        "crab",
+        "damas",
+        "e",
+        "earth",
+        "F",
+        "G",
+        "geoMass",
+        "hm",
+        "hms",
+        "hhmmss",
         "jansky",
+        "jd",
+        "jovmass",
         "lightyear",
         "mag",
+        "mjup",
+        "mp",
+        "minsec",
+        "msun",
+        "photon",
+        "rgeo",
+        "rjup",
+        "rsun",
+        "rydberg",
+        "seimens",
+        "tesla",
+        "u",
 
         // Imperial units
+        "barn",
         "cal",
         "foot",
         "inch",
@@ -66,13 +121,18 @@ static char *_unitNames[] = {
 
         // Others - engineering
         "NoUnits",
+        "bit",
         "encoder",
         "count",
+        "mmhg",
+        "percent",
         "pix",
 
         // Datetime units
         "tai",
-        "utc"
+        "utc",
+        "date",
+        "datetime",
 };
 
 /**
@@ -463,7 +523,7 @@ static cbor_item_t *_arrayValueAsItem(CswKeyType keyType, const void *values, in
         case ChoiceKey:
             // TODO: test this
         case StringKey:
-            return _makeStringItem(((char**)values)[index]);
+            return _makeStringItem(((char **) values)[index]);
         case EqCoordKey:
             return _makeEqCoordItem(((CswEqCoord *) values)[index]);
         case SolarSystemCoordKey:
