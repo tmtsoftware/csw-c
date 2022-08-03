@@ -4,7 +4,7 @@
 # Assumes that cs, sbt, pytest are all in your shell path.
 
 #CSW_VERSION=4.0.1
-CSW_VERSION=43c9a3492ccdc8d1a5d8a1311d3127f795b2d2b9
+CSW_VERSION=98771982d4829e20e0e8485d8e09d9873542b961
 
 logfile=test.log
 if ! hash cs 2>/dev/null ; then

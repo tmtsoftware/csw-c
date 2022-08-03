@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [csw-c v4.0.4] - 2022-
+
+### Changed
+
+- Updated Units to match latest CSW snapshot
+
 ## [csw-c v4.0.3] - 2022-02-14
 
 ### Changed
