@@ -1,6 +1,12 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [csw-c v5.0.0] - 2022-11
+
+### Changed
+
+- Updated for csw-5.0.0
+
 ## [csw-c v4.0.4] - 2022-
 
 ### Changed

@@ -7,6 +7,7 @@ Subscribing to events is not yet implemented.
 
 | csw-c     | csw        |
 |-----------|------------|
+| v5.0.0    | v5.0.0     |
 | v4.0.3    | v4.0.1     |
 | v4.0.2    | v4.0.0     |
 | v4.0.1    | v4.0.0     |
