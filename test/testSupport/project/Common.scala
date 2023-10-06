@@ -15,16 +15,12 @@ object Common extends AutoPlugin {
     scalaVersion := Libs.ScalaVersion,
     homepage := Some(url("https://github.com/tmtsoftware/csw")),
 
-    dependencyOverrides += AkkaHttp.`akka-http-spray-json`,
-
     scalacOptions ++= Seq(
       "-encoding",
       "UTF-8",
       "-feature",
       "-unchecked",
-      "-deprecation",
-      "-Xlint",
-      "-Ywarn-dead-code",
+      "-deprecation"
     ),
     Compile / doc / javacOptions ++= Seq("-Xdoclint:none"),
     Test / testOptions ++= Seq(

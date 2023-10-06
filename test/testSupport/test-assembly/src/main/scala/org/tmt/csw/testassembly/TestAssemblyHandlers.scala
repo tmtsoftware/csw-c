@@ -2,8 +2,8 @@ package org.tmt.csw.testassembly
 
 import java.io.{File, FileOutputStream}
 
-import akka.actor.typed.Behavior
-import akka.actor.typed.scaladsl.{ActorContext, Behaviors}
+import pekko.actor.typed.Behavior
+import pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import csw.command.client.messages.TopLevelActorMessage
 import csw.framework.models.CswContext
 import csw.framework.scaladsl.ComponentHandlers
