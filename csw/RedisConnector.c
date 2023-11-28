@@ -127,7 +127,7 @@ static void _subscribeCallback(redisAsyncContext *asyncRedis, void *r, void *pri
 CswRedisConnectorCallbackData *cswRedisConnectorSubscribe(redisAsyncContext *context, const char **keyList, int numKeys,
                                                           CswRedisConnectorCallback callback, void *privateData) {
     int bufSize = _getTotalSize(keyList, numKeys) + numKeys;
-    char keys[bufSize];
+    char keys[bufSize+numKeys+1];
     keys[0] = '\0';
     _join(keyList, numKeys, " ", keys);
     CswRedisConnectorCallbackData *callbackData = malloc(sizeof(CswRedisConnectorCallbackData));
