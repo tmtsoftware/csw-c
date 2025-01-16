@@ -12,6 +12,7 @@ if ! hash cs 2>/dev/null ; then
     exit 1
 fi
 set -x
+eval $(cs java --jvm temurin:1.17.0 --env)
 cs launch csw-services:$CSW_VERSION -- start -e > $logfile 2>&1 &
 cd testSupport || exit 1
 sbt stage  >> $logfile 2>&1
