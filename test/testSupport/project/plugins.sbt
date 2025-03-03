@@ -1,9 +1,9 @@
-addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
+//addSbtPlugin("org.scalastyle" %% "scalastyle-sbt-plugin" % "1.0.0")
 
-addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
-addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.1")
-addSbtPlugin("com.typesafe.sbt" % "sbt-native-packager" % "1.5.1")
-addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.9.0")
+addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.5.2")
+//addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.6.1")
+addSbtPlugin("com.github.sbt" % "sbt-native-packager" % "1.11.1")
+addSbtPlugin("com.eed3si9n" % "sbt-buildinfo" % "0.13.1")
 
 classpathTypes += "maven-plugin"
 
