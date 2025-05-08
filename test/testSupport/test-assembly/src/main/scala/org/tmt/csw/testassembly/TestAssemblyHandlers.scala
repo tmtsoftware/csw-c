@@ -2,8 +2,8 @@ package org.tmt.csw.testassembly
 
 import java.io.{File, FileOutputStream}
 
-import pekko.actor.typed.Behavior
-import pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
+import org.apache.pekko.actor.typed.Behavior
+import org.apache.pekko.actor.typed.scaladsl.{ActorContext, Behaviors}
 import csw.command.client.messages.TopLevelActorMessage
 import csw.framework.models.CswContext
 import csw.framework.scaladsl.ComponentHandlers
@@ -37,7 +37,7 @@ object TestAssemblyHandlers {
     "MinorPlanetCoordEvent",
     "SolarSystemCoordsEvent",
     "EqCoordsEvent"
-  ).map(EventName)
+  ).map(EventName.apply)
   private val eventKeys = eventNames.map(EventKey(prefix, _))
 
   // Generate a test file with the JSON for the received events, as an easy way to compare with the expected values

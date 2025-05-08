@@ -7,8 +7,8 @@
 hash sbt 2>/dev/null || { echo >&2 "Please install sbt first.  Aborting."; exit 1; }
 hash cs 2>/dev/null || { echo >&2 "Please install cs first.  Aborting."; exit 1; }
 
-CSW_VERSION=2f05249
-CS_CHANNEL="https://raw.githubusercontent.com/tmtsoftware/osw-apps/Allan/pekko-scala3-update-esw-http-api/apps.json"
+CSW_VERSION=6.0.0
+CS_CHANNEL="https://raw.githubusercontent.com/tmtsoftware/osw-apps/branch-6.0.x/apps.json"
 
 logfile=test.log
 if ! hash cs 2>/dev/null ; then
@@ -33,4 +33,4 @@ kill $assemblyPid
 # Kill csw-services
 kill `ps aux | grep 'csw-services' | grep -v grep | awk '{print $2}'`
 echo "================ logfile contents ========================="
-cat $logfile
+#cat $logfile
